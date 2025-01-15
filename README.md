@@ -1,4 +1,4 @@
-![Screenshot of App](hrms/screenshots/img1.png "Screenshot")
+![Screenshot of App](screenshots/img1.png "Screenshot")
 
 
 # Deployment Guide for Django Project with Celery, Daphne, and Nginx
