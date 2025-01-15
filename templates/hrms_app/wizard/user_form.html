@@ -1,0 +1,63 @@
+{% extends 'hrms_app/wizard/form-wizard.html' %}
+{% load i18n static %}
+
+{% block content_form %}
+  <div class="card shadow-sm mt-5">
+    <div class="card-header bg-light text-dark d-flex align-items-center">
+      <span class="bi bi-person-fill me-2"></span>
+      <strong>{% trans "Step 1: User Details" %}</strong>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        {% for field in form %}
+          {% if field.name != 'permissions' %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+              <label for="{{ field.id_for_label }}" class="form-label">
+                {{ field.label_tag }}
+                {% if field.field.required %}
+                  <span class="text-danger"><strong>*</strong></span> <!-- Red asterisk for required fields -->
+                {% endif %}
+              </label>
+              {{ field }}
+              {% if field.help_text %}
+                <small class="form-text text-muted">{{ field.help_text }}</small>
+              {% endif %}
+              {% if field.errors %}
+                <div class="text-danger">
+                  {% for error in field.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mt-5">
+    <div class="card-header bg-light text-dark d-flex align-items-center">
+      <span class="bi bi-grid-fill me-2"></span>
+      <strong>{% trans "User Permissions" %}</strong>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-12 col-sm-6 mb-3">
+          <label for="{{ form.permissions.id_for_label }}" class="form-label">{{ form.permissions.label_tag }}</label>
+          {{ form.permissions }}
+          {% if form.permissions.help_text %}
+            <small class="form-text text-muted">{{ form.permissions.help_text }}</small>
+          {% endif %}
+          {% if form.permissions.errors %}
+            <div class="text-danger">
+              {% for error in form.permissions.errors %}
+                <span>{{ error }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

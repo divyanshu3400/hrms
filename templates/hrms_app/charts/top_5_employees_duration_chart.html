@@ -1,0 +1,71 @@
+{% load hrms_tag %}
+
+<div id="bar-chart-container" style="height: 400px;">
+    <canvas id="bar-chart"></canvas>
+</div>
+
+<script>
+    // Call the API using fetch to get the data dynamically
+    fetch('/api/v1/attendance-aggregation/?year=2025&month=1')
+        .then(response => response.json())
+        .then(data => {
+            const top5EmployeesData = data.top_5_employees.map(employee => ({
+                label: employee.employee,  // Employee name
+                value: employee.total_duration_hours  // Total working hours
+            }));
+            // Prepare labels and data for the chart
+            const labels = top5EmployeesData.map(item => item.label);
+            const chartData = top5EmployeesData.map(item => item.value);
+            // Find the maximum working hours for Y-axis scaling
+            const maxDuration = Math.max(...chartData);
+            const stepSize = Math.ceil(maxDuration / 4); // Dividing into 4 quarters and rounding up
+            // Create the chart using Chart.js
+            var ctx = document.getElementById('bar-chart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Working Duration (Hours): '+data.total_working_duration_hours,
+                        data: chartData,
+                        backgroundColor: '#FFD700',
+                        borderColor: '#FFD700',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: maxDuration + stepSize,  // Max duration plus 1 step
+                            ticks: {
+                                stepSize: stepSize, // Interval size (quarter)
+                                callback: function(value) {
+                                    return value.toFixed(4) + ' hrs';  // Formatting the tick labels
+                                }
+                            }
+                        }
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.raw.toFixed(4) + ' hrs'; // Formatting tooltip
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching the data:', error);
+        });
+</script>

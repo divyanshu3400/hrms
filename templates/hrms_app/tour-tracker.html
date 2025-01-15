@@ -1,0 +1,138 @@
+{% extends 'hrms_app/base.html' %}
+{% load static hrms_tag %}
+{% load render_table from django_tables2 %}
+{% block title %}
+  {{ request.user.username|upper }} | Tour tracker
+{% endblock %}
+
+{% block content %}
+  {% render_breadcrumb 'Tour Tracker' urls %}
+  <div class="bg-light m-2">
+    <form method="get" action="{% url 'tour_tracker' %}">
+      <div class="row">
+        <!-- Status Filter -->
+        <div class="col-md-2 col-12 col-sm-12 col-lg-3 mb-3">{{ form.status.label_tag }} {{ form.status }}</div>
+
+        <!-- From Date Filter -->
+        <div class="col-md-3 col-12 col-sm-12 col-lg-3 mb-3">{{ form.from_date.label_tag }} {{ form.from_date }}</div>
+
+        <!-- To Date Filter -->
+        <div class="col-md-3 col-12 col-sm-12 col-lg-3 mb-3">{{ form.to_date.label_tag }} {{ form.to_date }}</div>
+
+        <!-- Search Field -->
+        <div class="col-md-3 col-12 col-sm-12 col-lg-3 mb-3">
+          <label for="search" class="text-muted">Search</label>
+          <input type="text" name="search" id="search" class="form-control" placeholder="Search tours..." />
+        </div>
+      </div>
+
+      <!-- Buttons: Filter, Clear Filter, Apply Tour -->
+      <div class="row mb-3">
+        <div class="col d-flex justify-content-start">
+          <button type="submit" class="btn btn-primary me-2 btn-sm"><span class="mif-filter"></span> Filter</button>
+          <a class="btn btn-secondary me-2 btn-sm" href="{% url 'tour_tracker' %}">Clear Filter</a>
+          <a href="{% url 'apply_tour' %}" class="btn btn-info btn-sm">Apply Tour</a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="bg-light p-2">
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="card-title"><span class="mif-table"></span> Applied Tours</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <!-- Render the table for applied tours -->
+              {% render_table table %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if user.is_rm %}
+    <div class="bg-light m-2">
+      {% if employee_tours %}
+        <div class="row">
+          <div class="col-12">
+            <div class="card mt-4">
+              <div class="card-header bg-cyan text-white">
+                <h5 class="card-title"><span class="mif-table"></span> Requested Tours</h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  {% for tour in employee_tours %}
+                    <div class="col-md-3 mb-4">
+                      <div>
+                        <div class="card-header d-flex align-items-center">
+                          {% if tour.applied_by.personal_detail.avatar %}
+                            <!-- Avatar -->
+                            <img src="{{ tour.applied_by.personal_detail.avatar.url }}" class="avatar rounded-circle me-3" alt="Avatar" style="max-width: 50px; max-height: 50px;" />
+                          {% endif %}
+                          <!-- Name -->
+                          <h5>{{ tour.applied_by }}</h5>
+                        </div>
+                        <div class="card-body bg-white">
+                          <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                              <div>
+                                Boarding -> <strong>{{ tour.from_destination }}</strong>
+                              </div>
+                              <div class="font-weight-bold">{{ tour.start_date }} {{ tour.start_time }}</div>
+                            </li>
+                            <li class="list-group-item">
+                              <div>
+                                Destination -><strong>{{ tour.to_destination }}</strong>
+                              </div>
+                              <div class="font-weight-bold">
+                                {% if tour.extended_end_date and tour.extended_end_time %}
+                                  {{ tour.extended_end_date }} - {{ tour.extended_end_time }}
+                                {% else %}
+                                  {{ tour.end_date }} - {{ tour.end_time }}
+                                {% endif %}
+                              </div>
+                            </li>
+                            <li class="list-group-item">
+                              <div>Status</div>
+                              <div class="badge bg-warning text-white">{{ tour.status|upper }}</div>
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="card-footer text-center">
+                          <a href="{% url 'tour_application_detail' tour.slug %}" class="btn btn-primary btn-sm">View Details</a>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class="container">
+          <h4 class="notification alert alert-danger">No requested {{ selected_status }} tours</h4>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    $(document).ready(function () {
+      $('.table').DataTable({
+        paging: true,
+        searching: true,
+        ordering: false,
+        dom: 'Bfrtip',
+        buttons: ['copy', 'csv', 'excel']
+      })
+    })
+  </script>
+{% endblock %}

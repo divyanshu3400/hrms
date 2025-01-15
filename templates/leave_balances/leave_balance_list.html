@@ -1,0 +1,17 @@
+{% for leave_balance in leave_balances %}
+  <div class="col-md-3 mb-3">
+    <div class="card" style="background-color: {{ leave_balance.color }};">
+      <div class="card-header">
+        <div class="text-white">{{ leave_balance.leave_type }}</div>
+      </div>
+      <div class="card-body text-white">
+        <div class="text-white">Total Bal: {{ leave_balance.balance }}</div>
+        <h2 class="card-title mb-0 text-white">Remaining Bal: {{ leave_balance.total_balance }}</h2>
+        <div class="text-white">On Hold: {{ leave_balance.on_hold }}</div>
+      </div>
+      <div class="card-footer text-center">
+        <a href="{{ leave_balance.url }}?next={{ request.path }}" class="btn btn-warning btn-sm">Apply Leave <span class="bi bi-arrow-right"></span></a>
+      </div>
+    </div>
+  </div>
+{% endfor %}

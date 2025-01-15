@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Your Tours</h2>
+<ul>
+  {% for tour in tours %}
+  <li><a href="{% url 'tour_detail' tour.id %}">{{ tour.from_destination }} to {{ tour.to_destination }} - {{ tour.status }}</a></li>
+  {% endfor %}
+</ul>
+<a href="{% url 'apply_tour' %}">Apply for a new tour</a>
+{% endblock %}

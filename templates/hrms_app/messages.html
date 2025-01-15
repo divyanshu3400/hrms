@@ -1,0 +1,24 @@
+{% if messages %}
+{% for message in messages %}
+  {% if message.tags == 'success' %}
+    <div class="toast show-right-top success">
+      <li>{{ message }}</li>
+    </div>
+  {% endif %}
+  {% if message.tags == 'error' %}
+    <div class="toast show-right-top alert">
+      <li>{{ message }}</li>
+    </div>
+  {% endif %}
+  {% if message.tags == 'info' %}
+    <div class="toast show-top info">
+      <li>{{ message }}</li>
+    </div>
+  {% endif %}
+  {% if message.tags == 'warning' %}
+    <div class="toast show-right-top warning">
+      <li>{{ message }}</li>
+    </div>
+  {% endif %}
+{% endfor %}
+{% endif %}

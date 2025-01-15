@@ -1,0 +1,53 @@
+{% load static %}
+<script src="{% static 'vendors/js/vendor.bundle.base.js' %}"></script>
+<script src="{% static 'vendors/select2/select2.min.js' %}"></script>
+<script src="{% static 'vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/js/bootstrap-timepicker.min.js"></script>
+<script src="{% static 'js/off-canvas.js' %}"></script>
+<script src="{% static 'js/hoverable-collapse.js' %}"></script>
+<script src="{% static 'js/template.js' %}"></script>
+<script src="{% static 'js/settings.js' %}"></script>
+<script src="{% static 'js/todolist.js' %}"></script>
+<script src="{% static 'fontawesomefree/js/all.min.js' %}"></script>
+<!-- Plugin js for this page -->
+<script src="{% static 'vendors/chart.js/Chart.min.js' %}"></script>
+<script src="{% static 'vendors/progressbar.js/progressbar.min.js' %}"></script>
+<!-- Custom js for this page -->
+<script src="{% static 'js/jquery.cookie.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+<script src="{% static 'js/Chart.roundedBarCharts.js' %}"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+<script>
+  ;(function ($) {
+    'use strict'
+    $('select').select2({})
+  })(jQuery)
+  $('.datepicker').datepicker({
+    uiLibrary: 'bootstrap5'
+  })
+</script>
+{{ form.media }}
+<script>
+  function getCookie(name) {
+    var cookieValue = null
+    if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';')
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i].trim()
+        // Check if the cookie name matches the CSRF token cookie name
+        if (cookie.substring(0, name.length + 1) === name + '=') {
+          // Get the value of the CSRF token
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1))
+          break
+        }
+      }
+    }
+    return cookieValue
+  }
+</script>

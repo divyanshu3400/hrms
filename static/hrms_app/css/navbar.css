@@ -1,0 +1,11 @@
+.navbar-background {
+    background-size: cover;
+    background-position: center;
+    background: linear-gradient(
+        rgb(0 222 191 / 60%),
+        rgb(4 0 105 / 60%)
+    ), url('/static/hrms_app/img/dots.png');
+    position: absolute;
+    width: 100%;
+    height: 5.rem;
+}

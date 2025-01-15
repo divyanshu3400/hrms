@@ -1,0 +1,58 @@
+{% extends 'hrms_app/base.html' %}
+{% load i18n static %}
+
+{% block content %}
+  <div class="bg-light mt-3">
+    <div class="row p-4">
+      <div class="col-12">
+        <!-- Warning text with icon -->
+        <div class="alert alert-warning mt-4 text-center" role="alert">
+          <strong>{% trans 'Warning!' %}</strong> {% trans 'This action cannot be undone.' %}
+        </div>
+
+        <h2 class="text-center text-danger">{% trans 'Confirm Delete' %}</h2>
+        <div class="text-center">
+          <!-- Animated delete icon -->
+          <img style="height: 100px; width: 100px;" src="{% static 'images/delete.gif' %}" alt="Delete Animation" class="img-fluid" id="delete-gif" />
+        </div>
+
+        <p class="text-center">
+          {% blocktrans %}Are you sure you want to delete this {{ object_name }}?{% endblocktrans %}
+        </p>
+
+        <!-- Display Related Objects -->
+        <div class="related-objects-section mt-4">
+          <h4>{% trans 'Related Objects' %}</h4>
+          {% if related_objects %}
+            <ul class="list-group">
+              {% for related in related_objects %}
+                <li class="list-group-item">
+                  <strong>{{ related.item }}</strong>
+                  <em>({{ related.model_name }})</em>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p>
+              {% trans 'No related objects found.' %}
+            </p>
+          {% endif %}
+        </div>
+
+        <!-- Confirmation Form -->
+        <form method="post" class="text-center mt-5">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-danger">{% trans "Yes! I'm sure" %}</button>
+          <a  href="javascript:history.back()" class="btn btn-sm btn-secondary">{% trans 'No! Take me back' %}</a>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional: JavaScript for additional animations -->
+  <script>
+    document.querySelector('form').onsubmit = function () {
+      document.getElementById('delete-gif').style.display = 'block'
+    }
+  </script>
+{% endblock %}

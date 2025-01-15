@@ -1,0 +1,9 @@
+
+{{title}}
+
+{{content}}
+
+Click the link below:
+{% if detail_url %}
+{{detail_url}}
+{% endif %}

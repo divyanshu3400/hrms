@@ -1,0 +1,269 @@
+{% extends 'hrms_app/base.html' %}
+{% load static hrms_tag %}
+{% block title %}
+  HRMS | {{ employee.get_full_name }}
+{% endblock %}
+
+{% block xtra_css %}
+
+{% endblock %}
+
+{% block content_main %}
+  {% render_breadcrumb 'Employees' urls %}
+
+  <div class="row m-3">
+    <div class="cell-lg-4 cell-md-6">
+      <div class="bg-white p-4">
+        <div class="skill-box mt-4-minus">
+          <div class="header border-top border-bottom bd-default">
+            <img src="{{ employee.personal_detail.avatar.url }}" class="avatar" />
+            <div class="title">{{ employee.get_full_name }}</div>
+            <div class="subtitle">{{ employee.personal_detail.designation }}</div>
+          </div>
+          <ul class="skills">
+            <li>
+              <span>Projects</span>
+              <span class="badge bg-orange fg-white">25</span>
+            </li>
+            <li>
+              <span>Tasks</span>
+              <span class="badge bg-cyan fg-white">5</span>
+            </li>
+            <li>
+              <span>Completed Projects</span>
+              <span class="badge bg-green fg-white">21</span>
+            </li>
+            <li>
+              <span>Followers</span>
+              <span class="badge bg-red fg-white">1024</span>
+            </li>
+          </ul>
+
+          <div class="d-flex flex-justify-start flex-align-center p-4">
+            <button class="button info">Follow</button>
+            <button class="button dark ml-1">Message</button>
+            <button class="button square ml-1"><span class="mif-cog"></span></button>
+          </div>
+        </div>
+      </div>
+      <br />
+      <div class="bg-white p-4">
+        <div data-role="panel" data-title-caption="Assigned Employees  <span class='place-right text-bold'>new 3</span>">
+          <ul class="user-list flex-justify-start">
+            {% if employee.employees %}
+              {% for user in employee.employees.all %}
+                <li>
+                  <img src="{% if user.personal_detail.avatar %}
+                      {{ user.personal_detail.avatar.url }}
+                    {% else %}
+                      {% static 'source/images/user1-128x128.jpg' %}
+                    {% endif %}"
+                    class="avatar" />
+                  <div class="text-ellipsis">{{ user.get_full_name }}</div>
+                </li>
+              {% endfor %}
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+      <br />
+      <div class="bg-white p-4">
+        <div data-role="panel" data-title-caption="Groups <span class='place-right text-bold'>last F</span>">
+          <ul class="items-list">
+            <li>
+              <span class="avatar">A</span>
+              <span class="label">Android</span>
+              <span class="second-label">1.856.546 people</span>
+              <span class="second-action mif-more-vert"></span>
+            </li>
+            <li>
+              <span class="avatar">G</span>
+              <span class="label">Google</span>
+              <span class="second-label">1.226.546 people</span>
+              <span class="second-action mif-more-vert"></span>
+            </li>
+            <li>
+              <span class="avatar">F</span>
+              <span class="label">Fallout</span>
+              <span class="second-label">856.546 people</span>
+              <span class="second-action mif-more-vert"></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="cell-lg-8 cell-md-6">
+      <div class="bg-white p-4">
+        <ul data-role="tabs" data-expand="true">
+          <li>
+            <a href="#user-detail">User Detail</a>
+          </li>
+          <li>
+            <a href="#personal-detail">Personal Detail</a>
+          </li>
+          <li>
+            <a href="#profile-activity">Address</a>
+          </li>
+          <li>
+            <a href="#">Family</a>
+          </li>
+        </ul>
+
+        <div id="user-profile-tabs-content">
+          <div id="user-detail">
+            <br />
+            <div data-role="panel" data-title-caption="User activity" data-title-icon="<span class='mif-chart-line'>" data-collapsible="true">
+              <canvas id="profileChart1"></canvas>
+            </div>
+            <br />
+            <div data-role="panel" data-title-caption="Assigned Employees" data-title-icon="<span class='mif-users'>" data-collapsible="true">
+              <table class="table striped table-border mt-4" data-role="table" data-cls-table-top="row" data-cls-search="cell-md-6" data-cls-rows-count="cell-md-6" data-rows="5" data-rows-steps="5, 10" data-show-activity="true" data-horizontal-scroll="true">
+                <thead>
+                  <tr>
+                    <th>Full Name</th>
+                    <th>Official Email</th>
+                    <th>Is Manager</th>
+                    <th>Designation</th>
+                    <th>Department</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="personal-detail">
+            <br />
+            <!-- Panel for Personal Information -->
+            <div data-role="panel" data-title-caption="{{ employee.get_full_name }}" data-title-icon="<span class='mif-info'>" data-collapsible="true">
+              <div class="row">
+                <!-- Gender -->
+                <div class="cell-md-4">
+                  <div class="text-bold">Gender</div>
+                  <div>{{ employee.personal_detail.gender }}</div>
+                </div>
+
+                <!-- Birthday -->
+                <div class="cell-md-4">
+                  <div class="text-bold">Birthday</div>
+                  <div><i class="fa-solid fa-calendar-day px-3"></i>{{ employee.personal_detail.birthday|date:'F j, Y' }}</div>
+                </div>
+
+                <!-- Marital Status -->
+                <div class="cell-md-4">
+                  <div class="text-bold">Marital Status</div>
+                  <div>{{ employee.personal_detail.marital_status }}</div>
+                </div>
+              </div>
+
+              <div class="row mt-2">
+                <!-- Religion -->
+                <div class="cell-md-4">
+                  <div class="text-bold">Religion</div>
+                  <div>{{ employee.personal_detail.religion }}</div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="cell-md-4">
+                  <div class="text-bold">Mobile Number</div>
+                  <div><i class="fa-solid fa-mobile px-3"></i>+91 &nbsp;{{ employee.personal_detail.mobile_number }}</div>
+                  {% if employee.personal_detail.alt_mobile_number %}
+                    <div class="text-bold mt-2">Alt Mobile</div>
+                    <div><i class="fa-solid fa-mobile px-3"></i>+91 &nbsp;{{ employee.personal_detail.alt_mobile_number }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="cell-md-4">
+                  {% if employee.personal_detail.cug_mobile_number %}
+                    <div class="text-bold">Company Mobile</div>
+                    <div><i class="fa-solid fa-mobile px-3"></i>+91 &nbsp;{{ employee.personal_detail.cug_mobile_number }}</div>
+                  {% endif %}
+                  <div class="text-bold mt-2">Official Mobile</div>
+                  <div><i class="fa-solid fa-mobile px-3"></i>+91 &nbsp;{{ employee.personal_detail.official_mobile_number }}</div>
+                </div>
+              </div>
+
+              <div class="row mt-2">
+                <!-- Job Anniversary -->
+                {% if employee.personal_detail.ann_date %}
+                  <div class="cell-md-4">
+                    <div class="text-bold">Job Anniversary</div>
+                    <div><i class="fa-solid fa-calendar-day px-3"></i>{{ employee.personal_detail.ann_date|date:'F j, Y' }}</div>
+                  </div>
+                {% endif %}
+
+                <!-- Date of Joining -->
+                <div class="cell-md-4">
+                  <div class="text-bold">Date of Joining</div>
+                  <div><i class="fa-solid fa-calendar-day px-3"></i>{{ employee.personal_detail.doj|date:'F j, Y' }}</div>
+                </div>
+
+                <!-- Date of Leaving, if applicable -->
+                {% if employee.personal_detail.dol %}
+                  <div class="cell-md-4">
+                    <div class="text-bold">Date of Leaving</div>
+                    <div><i class="fa-solid fa-calendar-day px-3"></i>{{ employee.personal_detail.dol|date:'F j, Y' }}</div>
+                  </div>
+                {% endif %}
+              </div>
+
+              <div class="row mt-2">
+                <!-- Date of Resignation, if applicable -->
+                {% if employee.personal_detail.dor %}
+                  <div class="cell-md-4">
+                    <div class="text-bold">Date of Resignation</div>
+                    <div><i class="fa-solid fa-calendar-day px-3"></i>{{ employee.personal_detail.dor|date:'F j, Y' }}</div>
+                  </div>
+                {% endif %}
+
+                <!-- Date of Final Settlement, if applicable -->
+                {% if employee.personal_detail.dof %}
+                  <div class="cell-md-4">
+                    <div class="text-bold">Date of Final Settlement</div>
+                    <div><i class="fa-solid fa-calendar-day px-3"></i>{{ employee.personal_detail.dof|date:'F j, Y' }}</div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <br />
+
+            <!-- Panel for Work Information -->
+            <div data-role="panel" data-title-caption="Work Info" data-title-icon="<span class='mif-library'>" data-collapsible="true">
+              <div class="row">
+                <!-- Designation -->
+                <div class="cell-md-4">
+                  <div class="text-bold">Designation</div>
+                  <div>{{ employee.personal_detail.designation }}</div>
+                </div>
+
+                <!-- CTC -->
+                {% if employee.personal_detail.ctc %}
+                  <div class="cell-md-4">
+                    <div class="text-bold">CTC</div>
+                    <div>{{ employee.personal_detail.ctc|floatformat:2 }}</div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div id="profile-activity">
+            <br />
+            <div data-role="panel" data-title-caption="User activity" data-title-icon="<span class='mif-chart-line'>" data-collapsible="true">
+              <canvas id="profileChart1"></canvas>
+            </div>
+            <br />
+            <div data-role="panel" data-title-caption="Clients" data-title-icon="<span class='mif-users'>" data-collapsible="true">
+              <table class="table striped table-border mt-4" data-role="table" data-cls-table-top="row" data-cls-search="cell-md-6" data-cls-rows-count="cell-md-6" data-rows="5" data-rows-steps="5, 10" data-show-activity="false" data-source="data/table.json" data-horizontal-scroll="true"></table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block xtra_js %}
+  <script src="{% static 'source/js/charts.js' %}"></script>
+{% endblock %}

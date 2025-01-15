@@ -1,0 +1,15 @@
+Dear {{ tour.applied_by.username }},
+
+Your tour application has been submitted successfully. Here are the details:
+
+From: {{ tour.from_destination }}
+To: {{ tour.to_destination }}
+Start Date: {{ tour.start_date }}
+End Date: {{ tour.end_date }}
+Remarks: {{ tour.remarks }}
+
+You can view the details and manage your tour application at the following link:
+{{ tour_detail_url }}
+
+Best regards,
+HRMS

@@ -1,0 +1,141 @@
+{% load i18n static webpush_notifications %}
+<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:'en-us' }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}" style="overflow-y: hidden;">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>
+      {% block title %}
+
+      {% endblock %}
+    </title>
+    {% include 'includes/mstyles.html' %}
+    {% block dark-mode-vars %}
+    {% endblock %}
+    {% block extrastyle %}
+
+    {% endblock %}
+    {% block extrahead %}
+
+    {% endblock %}
+    {% block blockbots %}
+      <meta name="robots" content="NONE,NOARCHIVE" />
+    {% endblock %}
+    {% webpush_header %}
+  </head>
+
+  <body data-admin-utc-offset="{% now 'Z' %}">
+    <div class="container-scroller">
+      {% block navigation %}
+        {% include 'includes/navigation.html' %}
+      {% endblock %}
+      <div class="container-fluid page-body-wrapper">
+        {% block sidebar %}
+          {% include 'includes/sidebar.html' %}
+        {% endblock %}
+
+        <div class="main-panel vh-100 overflow-auto border-top">
+          <div class="content-wrapper px-4 py-1 mb-5">
+            <div class="col-12">
+              {% block messages %}
+                {% if messages %}
+                  <div class="messages">
+                    {% for message in messages %}
+                      <div class="alert {% if message.tags == 'success' %}
+                          alert-success
+
+                        {% elif message.tags == 'info' %}
+                          
+                          alert-info
+
+                        {% elif message.tags == 'warning' %}
+                          
+                          alert-warning
+
+                        {% elif message.tags == 'error' %}
+                          
+                          alert-danger
+
+                        {% else %}
+                          
+                          alert-secondary
+
+                        {% endif %} alert-dismissible fade show"
+                        role="alert">
+                        {{ message|capfirst }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              {% endblock %}
+            </div>
+
+            <div class="row">
+              <div class="col-sm-12">
+                {% block content %}
+                  {% block object-tools %}
+                {% endblock %}
+                {{ content }}
+                {% endblock %}
+              </div>
+            </div>
+            {% comment %} {% webpush_button with_class="btn btn-outline-info" %} {% endcomment %}
+            {% include 'includes/footer.html' %}
+          </div>
+        </div>
+        {% block settings_panel %}
+          {% include 'includes/settings-panel.html' %}
+        {% endblock %}
+      </div>
+    </div>
+    <!-- END Container -->
+    {% include 'includes/mscripts.html' %}
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const toggleButton = document.getElementById('toggle-sidebar')
+        const sidebar = document.getElementById('right-sidebar')
+        const closeButton = sidebar.querySelector('.settings-close')
+      
+        // Open the sidebar
+        toggleButton.addEventListener('click', () => {
+          sidebar.classList.toggle('active')
+        })
+      
+        // Close the sidebar
+        closeButton.addEventListener('click', () => {
+          sidebar.classList.remove('active')
+        })
+      })
+      $(document).ready(function () {
+        // Initialize datepicker for fields with vDateField class
+        $('.vDateField').each(function () {
+          var fieldValue = $(this).val();
+          var dateValue = new Date(fieldValue); // Manually parse the date string
+          $(this).datepicker({
+              dateFormat: 'yy-mm-dd', // Ensure the correct date format
+              defaultDate: dateValue
+          });
+      });
+      
+        // Initialize timepicker for fields with vTimeField class
+      
+        // Initialize timepicker for fields with vTimeField class
+        $('.vTimeField').each(function () {
+          var fieldValue = $(this).val()
+          var timeValue = fieldValue
+          $(this)
+            .timepicker({
+              showMeridian: false, // Use 24-hour format
+              defaultTime: timeValue
+            })
+        })
+      })
+    </script>
+    {% block extra_js %}
+
+    {% endblock %}
+  </body>
+</html>

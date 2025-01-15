@@ -1,0 +1,19 @@
+Dear {{ user.first_name }},
+
+Your leave application ({{ application_no }}) has been submitted successfully.
+
+Leave Details:
+- Start Date: {{ start_date }}
+- End Date: {{ end_date }}
+- Leave Type: {{ leave_type }}
+- Used Leave: {{ used_leave }}
+- Balance Leave: {{ balance_leave }}
+- Reason: {{ reason }}
+
+
+You can review the application at the following link:
+{{ protocol }}://{{ domain }}{% url 'leave_application_detail' application_id=application_id %}?next={{ request.get_full_path }}
+
+
+Thank you,
+Your HR Team

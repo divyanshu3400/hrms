@@ -1,0 +1,104 @@
+.eventcalendar {
+    max-width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: Arial, sans-serif;
+}
+
+.calheader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: rgb(0, 0, 0);
+    width: 100%;
+    height: 55px;
+    padding: 10px;
+    border-radius: 6px;
+}
+#event-year-month{
+    font-size: larger;
+}
+.calheader button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 35px;
+}
+
+.days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    width: 100%;
+    padding: 10px;
+}
+
+.day {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+    height: 75px;
+    font-size: smaller;
+}
+
+.prev-date, .next-date {
+    color: #aaa;
+}
+
+.today {
+    background-color: lightblue;
+    color: #333;
+}
+
+.event {
+    color: white;
+    font-size: 15px;
+    padding: 2px 4px;
+    border-radius: 0px;
+    display: inline-block;
+    width: 26px;
+    margin-top: 5px;
+    text-align: center;
+}
+.week-days {
+    display: flex;
+}
+.sunday,
+.saturday {
+    color: rgb(113, 113, 113);
+}
+
+.weekCell {
+    flex: 1;
+    text-align: center;
+    width: 5rem;
+    background-color: cadetblue;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.present {
+    background-color: #28a745;
+}
+.leave-half{
+    background-color: #848484;
+}
+.leave-full{
+    background-color: #7228a7;
+}
+.absent{
+    background-color: #ff0000;
+}
+@media (max-width: 768px) {
+    /* For mobile devices, display cells in a column */
+    #row-container {
+        flex-direction: column;
+    }
+    
+    #cell1, #cell2 {
+        width: 100%; /* Ensure each cell takes full width */
+        margin-bottom: 20px; /* Add some space between the cells */
+    }
+}

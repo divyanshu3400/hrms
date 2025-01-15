@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+*.sqlite3
+db.sqlite3
+*.log
+*.xlsx
+.env
+
+# Virtual Environments
+venv/
+env/
+
+# Static and media files
+
+media/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+/pandora/
+
+# Testing
+.coverage
+*.cover
+coverage.xml
+nosetests.xml
+test-results/
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Security
+secrets.json
+
+*.bak
+*.dat
+*.dir
+
+celerybeat-schedule.bak
+celerybeat-schedule.dat
+celerybeat-schedule.dir
+wishes

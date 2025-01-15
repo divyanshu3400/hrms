@@ -1,0 +1,83 @@
+{% extends 'hrms_app/base.html' %}
+{% load static hrms_tag humanize i18n %}
+
+{% block title %}
+  {% trans 'Employees' %} | {{ title }}
+{% endblock %}
+
+{% block extrastyle %}
+
+{% endblock %}
+
+{% block content %}
+  <div class="bg-light my-2">
+    <form method="get">
+      <div class="row m-2">
+        <div class="col-md-3 col-12 mb-2">{{ form.location.label_tag }} {{ form.location }}</div>
+
+        <!-- From Date Filter -->
+        <div class="col-md-3 col-12 mb-2">{{ form.from_date.label_tag }} {{ form.from_date }}</div>
+
+        <!-- To Date Filter -->
+        <div class="col-md-3 col-12 mb-2">{{ form.to_date.label_tag }} {{ form.to_date }}</div>
+
+        <!-- Search Field -->
+        <div class="col-md-3 col-12 mb-2">{{ form.active.label_tag }} {{ form.active }}</div>
+        <!-- Buttons: Filter, Clear Filter, Apply Tour -->
+        <div class="col-md-3 col-12 mb-2">
+          <button type="submit" class="btn btn-sm btn-primary"><span class="mif-filter"></span> Filter</button>
+          <a class="btn btn-sm btn-secondary" href="{% url 'calendar' %}">Clear Filter</a>
+          <a class="btn btn-sm btn-warning" href="{% url 'detailed_attendance_report' %}">Detailed Report</a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="bg-white my-2 p-2">
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped table-hover">
+        <thead class="table-primary">
+          <tr>
+            <th>Employee Code</th> <th>Employee Name</th> {% for day in days_in_month %}
+            <th>{{ day|date:"d-m" }}</th>
+            {% endfor %}
+          </tr>
+        </thead> <tbody>
+          {% for employee in employees %}
+            <tr>
+              <td>
+                {% format_emp_code employee.personal_detail.employee_code %}
+              </td>
+              <td>{{ employee.get_full_name }}</td>
+              {% for mdate in days_in_month %}
+                <td>
+                  {% get_item attendance_data employee.id mdate as statuses %}
+                  {% for status in statuses %}
+                    <span style="color: {{ status.color }};">{{ status.status }}</span>
+                    {% if not forloop.last %} {% endif %}
+                  {% endfor %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    $(document).ready(function () {
+      $('.table').DataTable({
+        paging: true,
+        searching: true,
+        ordering: false,
+        dom: 'Bfrtip',
+        buttons: ['copy', 'csv', 'excel'],
+        pageLength: 25,
+        lengthMenu: [10, 25, 50, 100] // Dropdown options for page sizes
+      });
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,415 @@
+{% extends 'layouts/base.html' %}
+{% load static hrms_tag i18n %}
+{{ form.media }}
+{% block title %}
+  {{ request.user.get_short_name }} | {{ title }}
+{% endblock %}
+{% block extrastyle %}
+  <link rel="stylesheet" href="{% static 'js/select.dataTables.min.css' %}" />
+  <style>
+    .bg-light-blue {
+      background-color: #d9f2ff; /* Light blue */
+    }
+    
+    .bg-light-pink {
+      background-color: #ffe6e9; /* Light pink */
+    }
+    
+    .bg-light-yellow {
+      background-color: #fff8d9; /* Light yellow */
+    }
+    
+    .bg-light-green {
+      background-color: #e4ffdb; /* Light green */
+    }
+    
+    .bg-light-coral {
+      background-color: #ffd6cc; /* Light coral */
+    }
+    
+    .bg-light-cyan {
+      background-color: #d9ffff; /* Light cyan */
+    }
+    
+    .bg-light-lavender {
+      background-color: #f4eaff; /* Light lavender */
+    }
+    .event-text {
+      display: inline-block;
+      animation: fadeInUp 1s ease-in-out;
+    }
+    
+    .event-item {
+      opacity: 0;
+      animation: appear 1s ease-in-out forwards;
+      animation-delay: calc(var(--order, 0) * 0.5s); /* Staggered delay for each event */
+    }
+    
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="home-tab">
+    <div class="tab-content tab-content-basic">
+      <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview">
+        <div class="row">
+          <div class="col-lg-8 d-flex flex-column">
+            <div class="row flex-grow">
+              <div class="col-12 col-lg-4 col-lg-12 grid-margin stretch-card">
+                <div class="card card-rounded">
+                  <div class="card-body">
+                    <div class="d-sm-flex justify-content-between align-items-start">
+                      <div>
+                        <h4 class="card-title card-title-dash">Performance Line Chart</h4>
+                        <h5 class="card-subtitle card-subtitle-dash">Lorem Ipsum is simply dummy text of the printing</h5>
+                      </div>
+                      <div id="performance-line-legend"></div>
+                    </div>
+                    <div class="chartjs-wrapper mt-5">
+                      <canvas id="performaneLine"></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% if employees %}
+          <div class="col-lg-4 d-flex flex-column">
+            <div class="row flex-grow">
+              {% include 'includes/employee_highlights.html' %}
+            </div>
+          </div>
+          {% else %}
+          <div class="col-lg-4 d-flex flex-column">
+            {% load_attendance_form form %}
+          </div>
+          {% endif %}
+        </div>
+        <div class="row">
+          <div class="col-lg-8 d-flex flex-column">
+            <div class="row flex-grow">
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card card-rounded">
+                  <div class="card-body">
+                    <div class="d-sm-flex justify-content-between align-items-start">
+                      <div>
+                        <h4 class="card-title card-title-dash">{% trans "Registered Employees" %}</h4>
+                        <p class="card-subtitle card-subtitle-dash">You have {{users.count}} registered employees</p>
+                      </div>
+                      <div>
+                        <a class="btn btn-primary btn-lg text-white mb-0 me-0" href="{% url 'create_user' %}"><i class="mdi mdi-account-plus"></i>{% trans "Add new employee" %}</a>
+                      </div>
+                    </div>
+                    <div class="dt-responsive table-responsive mt-1">
+                      <table class="table select-table">
+                        <thead>
+                          <tr>
+                            <th>
+                              <div class="form-check form-check-flat mt-0">
+                                <label class="form-check-label"><input type="checkbox" class="form-check-input" aria-checked="false" /><i class="input-helper"></i></label>
+                              </div>
+                            </th>
+                            <th>User</th>
+                            <th>Designation</th>
+                            <th>Last Login</th>
+                            <th>Active</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for muser in users %}
+                            <tr>
+                              <td>
+                                <div class="form-check form-check-flat mt-0">
+                                  <label class="form-check-label"><input type="checkbox" class="form-check-input" aria-checked="false" /><i class="input-helper"></i></label>
+                                </div>
+                              </td>
+                              <td>
+                                <div class="d-flex">
+                                  <img {% if muser.personal_detail.avatar %} src="{{muser.personal_detail.avatar.url}}" {% else %} src="{% static 'images/faces/face1.jpg' %}"{% endif %} alt="" />
+                                  <div>
+                                    <h6>{{ muser.username }}</h6> <!-- Display the username -->
+                                    <p>{{ muser.get_full_name }}</p> <!-- Optionally display the full name of the user -->
+                                  </div>
+                                </div>
+                              </td>
+                              <td>
+                                <h6>{{ muser.personal_detail.designation.designation }}</h6>
+                                <p>{{ muser.personal_detail.designation.department.department|upper }}</p>
+                              </td>
+                              <td>{{ muser.last_login }}</td>
+                              <td>
+                                {% if muser.is_active %}
+                                  <i class="fas fa-check-circle text-success"></i> <!-- Green check icon -->
+                                {% else %}
+                                  <i class="fas fa-times-circle text-danger"></i> <!-- Red cross icon -->
+                                {% endif %}
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row flex-grow">
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card card-rounded">
+                  <div class="card-body">
+                    <div class="dt-responsive table-responsive mt-1">
+                    {% if users|length > 0 %}
+                      <table class="table table-bordered">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>{% trans "Employee Code" %}</th>
+                            <th>{% trans "Employee Name" %}</th>
+                            <th>{% trans "Event(s)" %}</th>
+                            <th>{% trans "Date" %}</th>
+                            <th>{% trans "Action" %}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for user in users %}
+                            {% with user.personal_detail as detail %}
+                              {% if detail.birthday or detail.marriage_ann or detail.doj %}
+                              {% if detail.birthday.month == current_date.month or detail.marriage_ann.month == current_date.month or detail.doj.month == current_date.month %}
+                                  <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.get_full_name }}</td>
+                                    <td>
+                                      {% if detail.birthday and detail.birthday.month == current_date.month %}
+                                        🎉 Birthday<br>
+                                      {% endif %}
+                                      {% if detail.marriage_ann and detail.marriage_ann.month == current_date.month %}
+                                        💍 Marriage Anniversary<br>
+                                      {% endif %}
+                                      {% if detail.doj and detail.doj.month == current_date.month %}
+                                        🎊 Job Anniversary<br>
+                                      {% endif %}
+                                    </td>
+                                    <td>
+                                      {% if detail.birthday and detail.birthday.month == current_date.month %}
+                                        {{detail.birthday}}
+                                      {% endif %}
+                                      {% if detail.marriage_ann and detail.marriage_ann.month == current_date.month %}
+                                      {{detail.marriage_ann}}
+                                      {% endif %}
+                                      {% if detail.doj and detail.doj.month == current_date.month %}
+                                      {{detail.doj}}
+                                      {% endif %}
+                                    </td>
+                                    <td>
+                                      <button class="btn btn-primary text-white">{% trans "Send Wishing E-mail" %}</button>
+                                    </td>
+                                  </tr>
+                              {% endif %}
+                              {% endif %}
+                            {% endwith %}
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    {% else %}
+                      <p>{% trans "No events to display for this month." %}</p>
+                    {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 d-flex flex-column">
+            {% if todo_list %}
+            <div class="row flex-grow">
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card card-rounded">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-lg-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <h4 class="card-title card-title-dash">Todo list</h4>
+                          <div class="add-items d-flex mb-0">
+                            <!-- <input type="text" class="form-control todo-list-input" placeholder="What do you need to do today?"> -->
+                            <button class="add btn btn-icons btn-rounded btn-primary todo-list-add-btn text-white me-0 pl-12p"><i class="mdi mdi-plus"></i></button>
+                          </div>
+                        </div>
+                        <div class="list-wrapper">
+                          <ul class="todo-list todo-list-rounded">
+                            <li class="d-block">
+                              <div class="form-check w-100">
+                                <label class="form-check-label"><input class="checkbox" type="checkbox" />Lorem Ipsum is simply dummy text of the printing <i class="input-helper rounded"></i></label>
+                                <div class="d-flex mt-2">
+                                  <div class="ps-4 text-small me-3">24 June 2020</div>
+                                  <div class="badge badge-opacity-warning me-3">Due tomorrow</div>
+                                  <i class="mdi mdi-flag ms-2 flag-color"></i>
+                                </div>
+                              </div>
+                            </li>
+                            <li class="d-block">
+                              <div class="form-check w-100">
+                                <label class="form-check-label"><input class="checkbox" type="checkbox" />Lorem Ipsum is simply dummy text of the printing <i class="input-helper rounded"></i></label>
+                                <div class="d-flex mt-2">
+                                  <div class="ps-4 text-small me-3">23 June 2020</div>
+                                  <div class="badge badge-opacity-success me-3">Done</div>
+                                </div>
+                              </div>
+                            </li>
+                            <li>
+                              <div class="form-check w-100">
+                                <label class="form-check-label"><input class="checkbox" type="checkbox" />Lorem Ipsum is simply dummy text of the printing <i class="input-helper rounded"></i></label>
+                                <div class="d-flex mt-2">
+                                  <div class="ps-4 text-small me-3">24 June 2020</div>
+                                  <div class="badge badge-opacity-success me-3">Done</div>
+                                </div>
+                              </div>
+                            </li>
+                            <li class="border-bottom-0">
+                              <div class="form-check w-100">
+                                <label class="form-check-label"><input class="checkbox" type="checkbox" />Lorem Ipsum is simply dummy text of the printing <i class="input-helper rounded"></i></label>
+                                <div class="d-flex mt-2">
+                                  <div class="ps-4 text-small me-3">24 June 2020</div>
+                                  <div class="badge badge-opacity-danger me-3">Expired</div>
+                                </div>
+                              </div>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            <div class="row flex-grow">
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card card-rounded">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-lg-12 " style="max-height: 500px; overflow-y: auto;">
+                        <div  class="d-flex justify-content-between align-items-center mb-3">
+                          {% include 'admin/includes/recent_logs.html' %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row flex-grow">
+              <div class="col-12 grid-margin stretch-card">
+                <div class="card card-rounded">
+                  <div class="card-body">
+                    <div class="row">
+                      <div class="col-lg-12">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                          <div>
+                            <h4 class="card-title card-title-dash">{% trans "Top Performer" %}</h4>
+                          </div>
+                          <div>
+                            <div class="dropdown">
+                              <button class="btn btn-secondary dropdown-toggle toggle-dark btn-lg mb-0 me-0" type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{% trans "Month Wise" %}</button>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton3">
+                                <h6 class="dropdown-header">{% trans "Month wise" %}</h6>
+                                {% comment %} <a class="dropdown-item" href="#">Year Wise</a> {% endcomment %}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="mt-3">
+                          {% render_top_5_employees_by_duration %}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% if employees %}
+            {% load_attendance_form form %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <!-- End custom js for this page -->
+  <script>
+    // Function to get CSRF token
+    function getCSRFToken() {
+      const cookies = document.cookie.split('; ')
+      for (let cookie of cookies) {
+        const [name, value] = cookie.split('=')
+        if (name === 'csrftoken') {
+          return value
+        }
+      }
+      return null
+    }
+    
+    $(document).ready(function () {
+      $('#executeCommandButton').click(function (e) {
+        e.preventDefault() // Prevent the default form submission behavior
+    
+        // Collect data from the form fields
+        const username = $('#id_user').val()
+        const from_date = $('#id_from_date').val()
+        const to_date = $('#id_to_date').val()
+    
+        // Perform a POST request
+        $.ajax({
+          url: `{% url 'execute_populate_attendance' %}`,
+          type: 'POST',
+          headers: {
+            'X-CSRFToken': getCSRFToken() // Use CSRF token from cookies
+          },
+          data: JSON.stringify({
+            username: username,
+            from_date: from_date,
+            to_date: to_date
+          }),
+          contentType: 'application/json',
+          success: function (response) {
+            alert(response.message) // Display success message
+          },
+          error: function (xhr) {
+            const errorMessage = xhr.responseJSON?.error || 'An error occurred'
+            alert(`Error: ${errorMessage}`) // Display error message
+          }
+        })
+      })
+      $('.table').DataTable({
+        paging: true,
+        searching: true,
+        ordering: false
+      })
+    })
+  </script>
+{% endblock %}

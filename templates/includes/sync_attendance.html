@@ -1,0 +1,21 @@
+{% load i18n %}
+<div class="row flex-grow">
+  <div class="col-12 grid-margin stretch-card">
+    <div class="card bg-white card-rounded">
+      <div class="card-body pb-0">
+        <h4 class="card-title card-title-dash text-dark mb-4">{% trans 'Populate User Specific attendance' %}</h4>
+        <div class="row">
+          <form method="post">
+            {% csrf_token %}
+            <div class="col-sm-12">{{ form.as_p }}</div>
+            <div class="col-sm-8">
+              <div class="status-summary-chart-wrapper pb-4">
+                <button type="button" id="executeCommandButton" class="btn btn-sm btn-primary text-white">{% trans 'Sync Attendance' %}</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

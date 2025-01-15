@@ -1,0 +1,83 @@
+{% extends 'hrms_app/base.html' %}
+{% load static hrms_tag %}
+{% block title %}
+  {{ user }} | Attendance Logs
+{% endblock %}
+
+{% block extrastyle %}
+  <link rel="stylesheet" type="text/css" href="{% static 'vendors/fullcalendar/dist/fullcalendar.css' %}" />
+{% endblock %}
+
+{% block content %}
+  {% render_breadcrumb 'Attendance' urls %}
+
+  <!-- Loader Overlay -->
+  <div id="loader-overlay" style="display: none;">
+    <div class="d-flex justify-content-center align-items-center position-fixed top-0 start-0 w-100 h-100 bg-white opacity-75 loader-overlay" style="display: none; z-index: 1050;">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  </div>
+
+  {% if user.is_staff or user.is_superuser %}
+    <!-- Filter Form -->
+    <div class="bg-white p-3 mb-3 rounded">
+      <form method="get" action="{% url 'calendar' %}">
+        <div class="row g-3">
+          <div class="col-lg-3 col-md-6 col-sm-12">{{ form.employee }}</div>
+        </div>
+      </form>
+    </div>
+  {% endif %}
+
+  <!-- Calendar Container -->
+  <div class="bg-white p-3 rounded">
+    <div id="calendar"></div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script type="text/javascript" src="{% static 'vendors/moment/moment.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendors/fullcalendar/dist/fullcalendar.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendors/fullcalendar/dist/locale-all.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendors/fullcalendar/dist/gcal.js' %}"></script>
+  <script type="text/javascript" src="{% static 'vendors/fullcalendar/dist/gcal.min.js' %}"></script>
+
+  <script>
+    $(document).ready(function () {
+      var loader = $('#loader-overlay')
+      loadCalendar()
+    
+      function loadCalendar(userId) {
+        loader.css('display', 'flex')
+        var url = '{% url "event_list" %}'
+        if (userId) {
+          url += '?employee=' + userId
+        }
+        $('#calendar').fullCalendar('destroy') // Clear previous calendar
+        $('#calendar').fullCalendar({
+          events: url,
+          editable: true,
+          header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+          },
+          eventRender: function(event, element) {
+            if (event.url) {
+              element.attr('href', event.url);
+            }
+          }
+        });
+        
+        loader.css('display', 'none')
+      }
+    
+      $('#option').change(function () {
+        var selectedUserId = $(this).val()
+        loadCalendar(selectedUserId)
+      })
+    })
+  </script>
+{% endblock %}

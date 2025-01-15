@@ -1,0 +1,56 @@
+      /* Base styles for notifications */
+      .notification {
+          padding: 1.2rem;
+          border-radius: 0px;
+          margin-bottom: 15px;
+          font-family: Arial, sans-serif;
+          font-size: 14px;
+          border: 1px solid transparent;
+      }
+
+      /* Success */
+      .notification.success {
+          background-color: #d4edda;
+          color: #155724;
+          border-color: #c3e6cb;
+      }
+
+      /* Info */
+      .notification.info {
+          background-color: #d1ecf1;
+          color: #0c5460;
+          border-color: #bee5eb;
+      }
+
+      /* Error */
+      .notification.error {
+          background-color: #f8d7da;
+          color: #721c24;
+          border-color: #f5c6cb;
+      }
+
+      /* Warning */
+      .notification.warning {
+          background-color: #fff3cd;
+          color: #856404;
+          border-color: #ffeeba;
+      }
+
+      /* Additional styling for lists */
+      .errorlist {
+          list-style-type: none;
+          padding: 0;
+          margin: 0;
+      }
+
+      .form-error {
+          padding: 0rem;
+          border-radius: 0px;
+          margin-bottom: 10px;
+          font-family: Arial, sans-serif;
+          font-size: 14px;
+          border: 1px solid transparent;
+          background-color: #f8d7da;
+          color: #721c24;
+          border-color: #f5c6cb;
+      }

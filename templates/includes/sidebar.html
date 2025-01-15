@@ -1,0 +1,185 @@
+{% load i18n static admin_star hrms_tag %}
+
+<nav class="sidebar sidebar-offcanvas sidebar-fixed vh-100 overflow-auto" id="sidebar">
+  <!-- Search Bar -->
+  <div class="sidebar-search p-3">
+    <input type="text" class="form-control" id="sidebarSearch" placeholder="{% trans 'Search...' %}" />
+  </div>
+
+  <ul class="nav flex-column">
+    {% if request.user.is_superuser or request.user.is_staff %}
+    {% url 'dashboard' as index_url %}
+      <li class="nav-item {% if request.path == index_url %} active {% endif %}">
+        <a class="nav-link" href="{{index_url}}">
+          <i class="mdi mdi-grid-large menu-icon"></i>
+          <span class="menu-title">{% trans 'Dashboard' %}</span>
+        </a>
+      </li>
+    {% endif %}
+
+    <!-- Leave Tracker -->
+    {% url 'calendar' as calendar_url %}
+    <li class="nav-item {% if request.path == calendar_url %} active {% endif %}">
+      <a class="nav-link" href="{{ calendar_url }}">
+        <i class="mdi mdi-calendar menu-icon"></i>
+        <span class="menu-title">{% trans 'Attendance' %}</span>
+      </a>
+    </li>
+
+    {% if user.is_superuser or user.is_staff %}
+      <!-- Django dynamic menu items -->
+      {% admin_get_menu as app_list %}
+      {% if app_list %}
+        {% for app in app_list %}
+          {% if app.has_perms and not app.pinned %}
+            <li class="nav-item {% if app.app_label in request.path %} active {% endif %}">
+              <a class="nav-link"
+                data-bs-toggle="collapse"
+                href="#submenu-{{ app.app_label }}"
+                aria-expanded="{% if app.app_label in request.path %}true{% else %}false{% endif %}"
+                aria-controls="submenu-{{ app.app_label }}">
+                <i class="menu-icon mdi {% if app.icon %}
+                    {{ app.icon }}
+                  {% else %}mdi-octagon{% endif %}">
+                </i>
+                <span class="menu-title">{{ app.label|slice:10 }}{% if app.label|length > 10 %}..{% endif %}</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse {% if app.app_label in request.path %}show{% endif %}" id="submenu-{{ app.app_label }}">
+                {% if app.models %}
+                  <ul class="nav flex-column sub-menu">
+                    {% for model in app.models %}
+                      {% if model.url %}
+                        <li class="nav-item">
+                          <a class="nav-link {% if model.url in request.path %} active {% endif %}" href="{{ model.url }}"><p>{{ model.label }}</p></a>
+                        </li>
+                      {% else %}
+                        <li class="nav-item">{{ model.label }}</li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </li>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+      <!-- Loop through all registered URLs -->
+
+      <!-- HRMS URLs (manually registered) -->
+      {% url 'employees' as employees_url %}
+      {% url 'create_user' as create_user_url %}
+      <li class="nav-item nav-category">Employee</li>
+      <li class="nav-item {% if request.path|is_active:employees_url|add:create_user_url %} active {% endif %}">
+        <a class="nav-link" data-bs-toggle="collapse" href="#emp" aria-expanded="{{ request.path|is_active:employees_url|add:create_user_url }}" aria-controls="emp">
+          <i class="mdi mdi-account-group menu-icon"></i>
+          <span class="menu-title">Employees</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse {% if request.path|is_active:employees_url|add:create_user_url %} show {% endif %}" id="emp">
+          <ul class="nav flex-column sub-menu">
+            <!-- Employees -->
+            <li class="nav-item {% if request.path == employees_url %} active {% endif %}">
+              <a class="nav-link" href="{{ employees_url }}">
+                <i class="mdi mdi-account-group menu-icon"></i>
+                <span class="menu-title">{% trans 'Employees' %}</span>
+              </a>
+            </li>
+            <li class="nav-item {% if request.path == create_user_url %} active {% endif %}">
+              <a class="nav-link" href="{{ create_user_url }}">
+                <i class="mdi mdi-account-plus menu-icon"></i>
+                <span class="menu-title">{% trans 'Create User' %}</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    {% endif %}
+
+    <!-- Leave Tracker -->
+    {% url 'leave_tracker' as leave_tracker_url %}
+    <li class="nav-item {% if request.path == leave_tracker_url %} active {% endif %}">
+      <a class="nav-link" href="{{ leave_tracker_url }}">
+        <i class="mdi mdi-calendar-check menu-icon"></i>
+        <span class="menu-title">{% trans 'Leave Tracker' %}</span>
+      </a>
+    </li>
+
+    <!-- Tour Tracker -->
+    {% url 'tour_tracker' as tour_tracker_url %}
+    <li class="nav-item {% if request.path == tour_tracker_url %} active {% endif %}">
+      <a class="nav-link" href="{{ tour_tracker_url }}">
+        <i class="mdi mdi-airplane-takeoff menu-icon"></i>
+        <span class="menu-title">{% trans 'Tour Tracker' %}</span>
+      </a>
+    </li>
+
+    {% if user.is_superuser or user.is_staff %}
+      <!-- Attendance Report -->
+      {% url 'attendance_report' as attendance_report_url %}
+      <li class="nav-item {% if request.path == attendance_report_url %} active {% endif %}">
+        <a class="nav-link" href="{{ attendance_report_url }}">
+          <i class="mdi mdi-file-document menu-icon"></i>
+          <span class="menu-title">{% trans 'Attendance Report' %}</span>
+        </a>
+      </li>
+      {% url 'leave_transaction_create' as leave_transaction_create_url %}
+      <li class="nav-item {% if request.path == leave_transaction_create_url %} active {% endif %}">
+        <a class="nav-link" href="{{ leave_transaction_create_url }}">
+          <i class="mdi mdi-file-document menu-icon"></i>
+          <span class="menu-title">{% trans 'Leave Transaction' %}</span>
+        </a>
+      </li>
+      {% url 'leave_bal_up' as leave_bal_up_url %}
+      <li class="nav-item {% if request.path == leave_bal_up_url %} active {% endif %}">
+        <a class="nav-link" href="{{ leave_bal_up_url }}">
+          <i class="mdi mdi-file-document menu-icon"></i>
+          <span class="menu-title">{% trans 'Leave Balance' %}</span>
+        </a>
+      </li>
+    {% endif %}
+    <!-- Regularizations -->
+    {% url 'regularization' as regularization_url %}
+    <li class="nav-item {% if request.path == regularization_url %} active {% endif %}">
+      <a class="nav-link" href="{{ regularization_url }}">
+        <!-- Update to check-circle or clipboard icon -->
+        <i class="mdi mdi-check-circle menu-icon"></i>
+        <span class="menu-title">{% trans 'Regularizations' %}</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+<script>
+  document.getElementById('sidebarSearch').addEventListener('input', function () {
+    const query = this.value.toLowerCase()
+    const navItems = document.querySelectorAll('#sidebar .nav-item')
+    navItems.forEach((item) => {
+      const text = item.innerText.toLowerCase()
+      const submenu = item.querySelector('.collapse')
+      let matchFound = text.includes(query)
+  
+      // If submenu exists, check its items
+      if (submenu) {
+        const submenuItems = submenu.querySelectorAll('.sub-menu .nav-item')
+        submenuItems.forEach((subItem) => {
+          const subItemText = subItem.innerText.toLowerCase()
+          if (subItemText.includes(query)) {
+            subItem.style.display = '' // Show matching submenu item
+            matchFound = true // Mark match found to show parent item
+            submenu.classList.add('show') // Expand submenu if match found
+          } else {
+            subItem.style.display = 'none' // Hide non-matching submenu items
+          }
+        })
+      }
+  
+      // Show or hide parent item based on whether any match was found
+      if (matchFound) {
+        item.style.display = ''
+      } else {
+        item.style.display = 'none'
+        if (submenu) submenu.classList.remove('show') // Collapse submenu if no match
+      }
+    })
+  })
+</script>

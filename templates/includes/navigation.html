@@ -1,0 +1,110 @@
+{% load static i18n hrms_tag %}
+<nav class="navbar default-layout col-lg-12 col-12 p-0 fixed-top d-flex align-items-top flex-row">
+  <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+    <div class="me-3">
+      <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-bs-toggle="minimize"><span class="icon-menu"></span></button>
+    </div>
+    <div>
+      <a class="navbar-brand brand-logo" href="{% url 'admin:index' %}"><img src="{% static LOGO_URL %}" alt="logo" /></a>
+      <a class="navbar-brand brand-logo-mini" href="/"><img src="{% static LOGO_MINI_URL %}" alt="logo" /></a>
+    </div>
+  </div>
+  <div class="navbar-menu-wrapper d-flex align-items-top">
+    <ul class="navbar-nav">
+      <li class="nav-item font-weight-semibold d-none d-lg-block ms-0">
+        <h1 class="welcome-text">{{ GREETING }}, {{user.personal_detail.salutation}} <span class="text-black fw-bold"><strong>{% firstof user.get_short_name user.get_username %}</strong>.</span></h1>
+        <h3 class="welcome-sub-text">
+          {% block nav-breadcrumbs %}
+          <nav aria-label="{% translate 'Breadcrumbs' %}">
+            {% block breadcrumbs %}
+              <div class="breadcrumbs">
+                <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+                {% if title %}
+                  &rsaquo; {{ title }}
+                {% endif %}
+              </div>
+            {% endblock %}
+          </nav>
+          {% endblock %}
+        </h3>
+      </li>
+    </ul>
+    <ul class="navbar-nav ms-auto">
+      <li class="nav-item">
+        <form class="search-form" action="/" method="get">
+          <i class="icon-search"></i>
+          <input type="search" name="q" class="form-control" placeholder="Search Here" title="Search here" />
+        </form>
+      </li>
+
+      <li class="nav-item dropdown">
+        <a class="nav-link count-indicator" id="notificationDropdown" href="#" data-bs-toggle="dropdown"><i class="icon-mail icon-lg"></i></a>
+        <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="notificationDropdown">
+          <a class="dropdown-item py-3 border-bottom">
+            <p class="mb-0 font-weight-medium float-left">You have 4 new notifications</p>
+            <span class="badge badge-pill badge-primary float-right">View all</span>
+          </a>
+          <a class="dropdown-item preview-item py-3">
+            <div class="preview-thumbnail">
+              <i class="mdi mdi-alert m-auto text-primary"></i>
+            </div>
+            <div class="preview-item-content">
+              <h6 class="preview-subject fw-normal text-dark mb-1">Application Error</h6>
+              <p class="fw-light small-text mb-0">Just now</p>
+            </div>
+          </a>
+          <a class="dropdown-item preview-item py-3">
+            <div class="preview-thumbnail">
+              <i class="mdi mdi-settings m-auto text-primary"></i>
+            </div>
+            <div class="preview-item-content">
+              <h6 class="preview-subject fw-normal text-dark mb-1">Settings</h6>
+              <p class="fw-light small-text mb-0">Private message</p>
+            </div>
+          </a>
+          <a class="dropdown-item preview-item py-3">
+            <div class="preview-thumbnail">
+              <i class="mdi mdi-airballoon m-auto text-primary"></i>
+            </div>
+            <div class="preview-item-content">
+              <h6 class="preview-subject fw-normal text-dark mb-1">New user registration</h6>
+              <p class="fw-light small-text mb-0">2 days ago</p>
+            </div>
+          </a>
+        </div>
+      </li>
+      {% load_notifications request.user %}
+      <li class="nav-item dropdown d-none d-lg-block user-dropdown">
+        <a class="nav-link" id="UserDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+          <img class="img-xs rounded-circle" 
+            {% if user.personal_detail.avatar %}
+                src="{{ user.personal_detail.avatar.url }}"
+            {% else %}
+                src="{% static 'images/faces/face8.jpg' %}"
+            {% endif %}
+            alt="Profile image" />
+        <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="UserDropdown">
+          <div class="dropdown-header text-center">
+            
+            <img style="height: 60px;width: 60px;" class="img-md rounded-circle" 
+            {% if user.personal_detail.avatar %}src="{{user.personal_detail.avatar.url}}"{% else %}src="{% static 'images/faces/face8.jpg' %}"{% endif %}
+            alt="Profile image" />
+            <p class="mb-1 mt-3 font-weight-semibold">{% firstof user.get_full_name user.get_username %}</p>
+            <p class="fw-light text-muted mb-0">{{user.email}}</p>
+          </div>
+          <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
+          <a class="dropdown-item" href="{% url 'password_change' %}"><i class="dropdown-item-icon mdi mdi-pencil text-primary me-2"></i>{% trans "Change Password" %}</a>
+          {% if request.user.is_authenticated %}
+            <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+              {% csrf_token %}
+              <button class="dropdown-item" type="submit"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>{% trans 'Log out' %}</button>
+            </form>
+          {% else %}
+            <a href="{% url 'login' %}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-login text-primary me-2"></i>Sign IN</a>
+          {% endif %}
+        </div>
+      </li>
+    </ul>
+    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas"><span class="mdi mdi-menu"></span></button>
+  </div>
+</nav>

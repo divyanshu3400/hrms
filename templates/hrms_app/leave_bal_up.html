@@ -1,0 +1,86 @@
+{% extends 'hrms_app/base.html' %}
+{% load static hrms_tag i18n %}
+{{ form.media }}
+{% block title %}
+  {{ request.user.first_name }} | {% trans 'Leave Balance Update' %}
+{% endblock %}
+
+{% block extrastyle %}
+  <link rel="stylesheet" href="{% static 'hrms_app/css/status.css' %}" />
+  <style>
+    .required {
+      color: red;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  {% render_breadcrumb 'Leave Balance Update' urls %}
+
+  <div class="bg-white p-4">
+    <h6 class="mb-4">{% trans 'Note: All ' %}<span class="text-danger">*</span>{% trans ' marked fields are required.' %}</h6>
+    <form id="transaction_form" method="post">
+      {% csrf_token %}
+      <div class="row g-3">
+        {% for field in form %}
+          {% if field.name != 'remarks' %}
+            <div class="col-md-4 col-12">
+              {{ field.label_tag }}{% if field.field.required %}
+                <span class="text-danger">*</span>
+              {% endif %}
+              {{ field }}
+              {% if field.errors %}
+                <div class="text-danger">{{ field.errors }}</div>
+              {% endif %}
+              <small class="form-text text-muted">{{ field.help_text }}</small>
+            </div>
+          {% endif %}
+        {% endfor %}
+
+        <div class="col-12">
+          {{ form.remarks.label_tag }}{% if form.remarks.field.required %}
+            <span class="text-danger">*</span>
+          {% endif %}
+          {{ form.remarks }}
+          {% if form.remarks.errors %}
+            <div class="text-danger">{{ form.remarks.errors }}</div>
+          {% endif %}
+          <small class="form-text text-muted">{{ form.remarks.help_text }}</small>
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-12 text-center">
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#confirmationModal">{% trans 'Submit' %}</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header bg-warning text-white">
+          <h5 class="modal-title" id="confirmationModalLabel">Are you sure?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% trans 'You want to submit leave transaction. Please check the details before you submit.' %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans 'Cancel' %}</button>
+          <button type="button" class="btn btn-primary" onclick="submitForm()">{% trans 'Submit' %}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    function submitForm() {
+      document.getElementById('transaction_form').submit()
+    }
+  </script>
+{% endblock %}

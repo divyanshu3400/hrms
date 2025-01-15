@@ -1,0 +1,121 @@
+{% extends 'hrms_app/base.html' %}
+{% load static %}
+{% load hrms_tag humanize i18n %}
+{% block title %}
+  HRMS | Employees
+{% endblock %}
+
+{% block extracss %}
+  <link rel="stylesheet" href="{% static 'hrms_app/css/status.css' %}" />
+{% endblock %}
+
+{% block content %}
+  {% render_breadcrumb 'Employees' urls %}
+  <div class="container bg-white p-2">
+    <div class="container">
+      <form method="get" action="{% url 'employees' %}">
+        <div class="row">
+          <div class="col-md-4 col-sm-12 col-lg-3">
+            <div class="form-group">
+              <input type="text" class="form-control" name="q" value="{{ search_query }}" placeholder="Search users..." />
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-12 col-lg-3">
+            <div class="form-group">
+              <select name="is_active" class="form-select">
+                <option value="">All</option>
+                <option value="True" {% if is_active == 'True' %}selected{% endif %}>Active</option>
+                <option value="False" {% if is_active == 'False' %}selected{% endif %}>Inactive</option>  
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-12 col-lg-3 d-flex justify-content-between align-items-center">
+            <button type="submit" class="btn btn-primary btn-sm"><span class="mif-filter"></span> Filter</button>
+            <a class="btn btn-secondary btn-sm" href="{% url 'employees' %}">Clear Filter</a>
+            <a href="{% url 'create_user' %}" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-user-plus"></i> Add Employee</a>
+          </div>
+        </div>
+      </form>
+      <!-- User List -->
+    </div>
+
+    <div class="container mt-3">
+      <div class="row">
+        {% for user in users %}
+          <div class="col-md-4 col-sm-12 col-lg-3 mt-3">
+            <div class="card">
+              <div class="card-body">
+                <div class="d-flex flex-column align-items-center">
+                  <img src="{% if user.personal_detail.avatar %}
+                      {{ user.personal_detail.avatar.url }}
+                    {% else %}
+                      {% static 'hrms_app/im/person.png' %}
+                    {% endif %}"
+                    class="avatar rounded-circle mb-2 img-fluid"
+                    style="max-width: 100px; max-height: 100px; width: auto; height: auto;" />
+                  <h5 class="card-title">{{ user.first_name }}</h5>
+                  <h6 class="card-subtitle mb-2 text-muted">{{ user.personal_detail.designation }}</h6>
+                </div>
+                <ul class="list-unstyled">
+                  <li>
+                    <span>Department</span>
+                    <span class="badge bg-warning text-dark">{{ user.personal_detail.designation.department }}</span>
+                  </li>
+                  <li>
+                    <span>Joined At</span>
+                    <span class="badge bg-info text-white">{{ user.personal_detail.doj }}</span>
+                  </li>
+                </ul>
+                <div class="d-flex justify-content-between">
+                  <a href="{% url 'edit_user_wizard' user.pk %}" class="btn btn-info btn-sm"><i class="fa-solid fa-edit"></i> Edit</a>
+                  <a href="{% url 'employee_profile' user.pk %}" class="btn btn-outline-secondary btn-sm"><i class="fa-solid fa-eye"></i> View</a>
+              </div>              
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="col-12">
+            <p>No Employee found.</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="container mt-3">
+      <nav>
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+            <li class="page-item">
+              <a class="page-link" href="?q={{ search_query }}&is_active={{ is_active }}&page=1">&laquo; First</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?q={{ search_query }}&is_active={{ is_active }}&page={{ page_obj.previous_page_number }}">Previous</a>
+            </li>
+          {% endif %}
+
+          <li class="page-item active">
+            <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.</span>
+          </li>
+
+          {% if page_obj.has_next %}
+            <li class="page-item">
+              <a class="page-link" href="?q={{ search_query }}&is_active={{ is_active }}&page={{ page_obj.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?q={{ search_query }}&is_active={{ is_active }}&page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    </div>
+  </div>
+{% endblock %}
+
+{% block xtra_js %}
+  <script>
+    function submitForm() {
+      document.getElementById('creation_form').submit()
+    }
+  </script>
+{% endblock %}

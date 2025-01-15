@@ -1,0 +1,122 @@
+{% extends 'hrms_app/base.html' %}
+{% load hrms_tag humanize i18n static %}
+{{ wizard.form.media }}
+{% block title %}
+  HRMS | Register Employee
+{% endblock %}
+
+{% block extrastyle %}
+  <link rel="stylesheet" href="{% static 'hrms_app/css/status.css' %}}" />
+  <style>
+    .progress-indicator {
+      list-style: none;
+      padding-left: 0;
+      display: flex;
+      justify-content: center;
+    }
+    
+    .progress-step {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: 0 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      color: white;
+      background-color: lightgray;
+      transition: background-color 0.3s;
+    }
+    
+    .progress-step.completed {
+      background-color: green;
+    }
+    
+    .progress-step.current {
+      background-color: blue;
+    }
+    
+    .progress-step.pending {
+      background-color: lightgray;
+      color: #333;
+      cursor: not-allowed;
+    }
+    
+    .progress-step.completed,
+    .progress-step.current {
+      cursor: pointer;
+    }
+    
+    .progress-step.completed:hover {
+      background-color: darkgreen;
+    }
+    
+    .progress-step.current:hover {
+      background-color: darkblue;
+    }
+    
+  </style>
+{% endblock %}
+
+{% block content %}
+  {% render_breadcrumb 'Create Employee' urls %}
+  <div class="bg-light">
+    <form id="creation_form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ wizard.management_form }}
+
+      <div class="mt-4">
+        {% block content_form %}
+
+        {% endblock %}
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-md-4 mb-2">
+          {% if wizard.steps.prev %}
+            <input type="hidden" name="is_navigation" value="true" />
+            <button class="btn btn-sm btn-outline-primary w-100 mb-2" name="wizard_goto_step" type="submit" value="{{ wizard.steps.first }}">{% translate 'First step' %}</button>
+            <button class="btn btn-sm btn-outline-secondary w-100" name="wizard_goto_step" type="submit" value="{{ wizard.steps.prev }}">{% translate 'Previous step' %}</button>
+          {% endif %}
+        </div>
+        <div class="col-md-4 mb-2">
+          <button type="button" class="btn btn-sm btn-primary w-100" data-bs-toggle="modal" data-bs-target="#submitDialog">
+            <i class="fa fa-check-circle me-2"></i> <!-- Bootstrap icon for checkmark -->
+            {% translate 'Submit' %}
+          </button>
+        </div>
+        <div class="col-md-4">
+          <a href="{% url 'cancel_user_creation' %}" class="btn btn-sm btn-danger w-100">{% translate 'Cancel' %}</a>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Bootstrap Modal -->
+  <div class="modal fade" id="submitDialog" tabindex="-1" aria-labelledby="submitDialogLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="submitDialogLabel">{% translate 'Are you sure?' %}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% translate 'You want to submit the details. Please check carefully.' %}
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate 'Cancel' %}</button>
+          <button type="button" class="btn btn-primary" onclick="submitForm()">{% translate 'Submit' %}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    function submitForm() {
+      document.getElementById('creation_form').submit()
+    }
+  </script>
+{% endblock %}

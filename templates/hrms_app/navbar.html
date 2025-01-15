@@ -1,0 +1,43 @@
+{% load static hrms_tag %}
+<div data-role="appbar" class="navbar-background pos-absolute fg-white">
+    <a href="#" class="app-bar-item d-block d-none-lg" id="paneToggle"><span class="mif-menu"></span></a>
+    <div class="app-bar-container ml-auto">
+        <div class="app-bar-container ">
+            {% load_pending_leaves request.user %}
+        </div>
+        <div class="app-bar-container">
+            <a href="#" class="app-bar-item">
+                <img src="{% if user.personal_detail.avatar %}{{user.personal_detail.avatar.url}}{% else %}{% static 'source/images/jek_vorobey.jpg' %}{% endif %}"
+                    class="avatar">
+                <span class="ml-2 app-bar-name">{% if user.first_name %}{{user.first_name}} {{user.last_name}}
+                    {% else %} {{user.username}}
+                    {% endif %}</span>
+            </a>
+            <div class="bg-darkCyan user-block shadow-1" data-role="collapse" data-collapsed="true">
+                <div class="fg-white p-2 text-center">
+                    <img src="{% if user.personal_detail.avatar %}{{user.personal_detail.avatar.url}}{% else %}{% static 'source/images/jek_vorobey.jpg' %}{% endif %}"
+                        class="avatar">
+                    <div class="h4 mb-0">{% if user.first_name %}{{user.first_name}} {{user.last_name}}
+                        {% else %} {{user.username}} {% endif %}</div>
+                    <div>{{user.role|upper}}</div>
+                </div>
+                <div class="bg-white fg-dark d-flex flex-justify-between flex-equal-items p-2">
+                    {% if request.user.is_superuser %}
+                    <a href="{% url 'admin:index' %}" target="_blank" class="button flat-button p-1">Admin</a>
+                    {% endif %}
+                    <a href="{% url 'password_change' %}" class="button flat-button">Change Password</a>
+                </div>
+                <div class="bg-white d-flex flex-justify-between flex-equal-items p-2 bg-light">
+                    <a href="{% url 'profile' %}" class="button fg-dark flat-button mr-1">Profile</a>
+                    <form id="logout-form" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button class="button flat-button ml-1" type="submit">Sign out</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <button  onclick="$('#default-charms').data('charms').toggle()" class="button app-bar-item">
+            <span class="mif-cogs"></span>
+        </button>
+    </div>
+</div>

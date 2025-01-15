@@ -1,0 +1,6 @@
+{% load i18n %}
+{% load admin_urls %}
+
+{% if has_import_permission %}
+<li style="list-style: none;" class="m-2"><a href='{% url opts|admin_urlname:"import" %}' class="import_link btn btn-sm btn-warning">{% translate "Import" %}</a></li>
+{% endif %}

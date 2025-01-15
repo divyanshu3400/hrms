@@ -1,0 +1,317 @@
+(function () {
+  'use strict';
+
+  let _WINDOW = {};
+  let _DOCUMENT = {};
+
+  try {
+    if (typeof window !== 'undefined') _WINDOW = window;
+    if (typeof document !== 'undefined') _DOCUMENT = document;
+  } catch (e) {}
+
+  const {
+    userAgent = ''
+  } = _WINDOW.navigator || {};
+  const WINDOW = _WINDOW;
+  const DOCUMENT = _DOCUMENT;
+  const IS_BROWSER = !!WINDOW.document;
+  const IS_DOM = !!DOCUMENT.documentElement && !!DOCUMENT.head && typeof DOCUMENT.addEventListener === 'function' && typeof DOCUMENT.createElement === 'function';
+  const IS_IE = ~userAgent.indexOf('MSIE') || ~userAgent.indexOf('Trident/');
+
+  var a = "classic",
+      r = "sharp",
+      o = "sharp-duotone";
+
+  var et$1 = {
+    classic: {
+      900: "fas",
+      400: "far",
+      normal: "far",
+      300: "fal",
+      100: "fat"
+    },
+    sharp: {
+      900: "fass",
+      400: "fasr",
+      300: "fasl",
+      100: "fast"
+    },
+    "sharp-duotone": {
+      900: "fasds"
+    }
+  };
+  var bt = {
+    kit: {
+      fak: "kit",
+      "fa-kit": "kit"
+    },
+    "kit-duotone": {
+      fakd: "kit-duotone",
+      "fa-kit-duotone": "kit-duotone"
+    }
+  };
+  var lo = {
+    classic: {
+      "fa-brands": "fab",
+      "fa-duotone": "fad",
+      "fa-light": "fal",
+      "fa-regular": "far",
+      "fa-solid": "fas",
+      "fa-thin": "fat"
+    },
+    sharp: {
+      "fa-solid": "fass",
+      "fa-regular": "fasr",
+      "fa-light": "fasl",
+      "fa-thin": "fast"
+    },
+    "sharp-duotone": {
+      "fa-solid": "fasds"
+    }
+  },
+      no = {
+    classic: {
+      fab: "fa-brands",
+      fad: "fa-duotone",
+      fal: "fa-light",
+      far: "fa-regular",
+      fas: "fa-solid",
+      fat: "fa-thin"
+    },
+    sharp: {
+      fass: "fa-solid",
+      fasr: "fa-regular",
+      fasl: "fa-light",
+      fast: "fa-thin"
+    },
+    "sharp-duotone": {
+      fasds: "fa-solid"
+    }
+  },
+      fo = {
+    classic: {
+      solid: "fas",
+      regular: "far",
+      light: "fal",
+      thin: "fat",
+      duotone: "fad",
+      brands: "fab"
+    },
+    sharp: {
+      solid: "fass",
+      regular: "fasr",
+      light: "fasl",
+      thin: "fast"
+    },
+    "sharp-duotone": {
+      solid: "fasds"
+    }
+  },
+      ho = {
+    classic: {
+      fa: "solid",
+      fas: "solid",
+      "fa-solid": "solid",
+      far: "regular",
+      "fa-regular": "regular",
+      fal: "light",
+      "fa-light": "light",
+      fat: "thin",
+      "fa-thin": "thin",
+      fad: "duotone",
+      "fa-duotone": "duotone",
+      fab: "brands",
+      "fa-brands": "brands"
+    },
+    sharp: {
+      fa: "solid",
+      fass: "solid",
+      "fa-solid": "solid",
+      fasr: "regular",
+      "fa-regular": "regular",
+      fasl: "light",
+      "fa-light": "light",
+      fast: "thin",
+      "fa-thin": "thin"
+    },
+    "sharp-duotone": {
+      fa: "solid",
+      fasds: "solid",
+      "fa-solid": "solid"
+    }
+  };
+  var Io = {
+    kit: {
+      "fa-kit": "fak"
+    },
+    "kit-duotone": {
+      "fa-kit-duotone": "fakd"
+    }
+  },
+      Fo = {
+    kit: {
+      fak: "fa-kit"
+    },
+    "kit-duotone": {
+      fakd: "fa-kit-duotone"
+    }
+  },
+      So = {
+    kit: {
+      kit: "fak"
+    },
+    "kit-duotone": {
+      "kit-duotone": "fakd"
+    }
+  };
+
+  const NAMESPACE_IDENTIFIER = '___FONT_AWESOME___';
+  const PRODUCTION = (() => {
+    try {
+      return "production" === 'production';
+    } catch (e$$1) {
+      return false;
+    }
+  })();
+
+  function familyProxy(obj) {
+    // Defaults to the classic family if family is not available
+    return new Proxy(obj, {
+      get(target, prop) {
+        return prop in target ? target[prop] : target[a];
+      }
+
+    });
+  }
+
+  const _PREFIX_TO_STYLE = { ...ho
+  };
+  _PREFIX_TO_STYLE[a] = { ...ho[a],
+    ...bt['kit'],
+    ...bt['kit-duotone']
+  };
+  const PREFIX_TO_STYLE = familyProxy(_PREFIX_TO_STYLE);
+  const _STYLE_TO_PREFIX = { ...fo
+  };
+  _STYLE_TO_PREFIX[a] = { ..._STYLE_TO_PREFIX[a],
+    ...So['kit'],
+    ...So['kit-duotone']
+  };
+  const STYLE_TO_PREFIX = familyProxy(_STYLE_TO_PREFIX);
+  const _PREFIX_TO_LONG_STYLE = { ...no
+  };
+  _PREFIX_TO_LONG_STYLE[a] = { ..._PREFIX_TO_LONG_STYLE[a],
+    ...Fo['kit']
+  };
+  const PREFIX_TO_LONG_STYLE = familyProxy(_PREFIX_TO_LONG_STYLE);
+  const _LONG_STYLE_TO_PREFIX = { ...lo
+  };
+  _LONG_STYLE_TO_PREFIX[a] = { ..._LONG_STYLE_TO_PREFIX[a],
+    ...Io['kit']
+  };
+  const LONG_STYLE_TO_PREFIX = familyProxy(_LONG_STYLE_TO_PREFIX);
+  const _FONT_WEIGHT_TO_PREFIX = { ...et$1
+  };
+  const FONT_WEIGHT_TO_PREFIX = familyProxy(_FONT_WEIGHT_TO_PREFIX);
+  const prefixes = new Set();
+  Object.keys(STYLE_TO_PREFIX[a]).map(prefixes.add.bind(prefixes));
+  Object.keys(STYLE_TO_PREFIX[r]).map(prefixes.add.bind(prefixes));
+  Object.keys(STYLE_TO_PREFIX[o]).map(prefixes.add.bind(prefixes));
+
+  function bunker(fn) {
+    try {
+      for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      fn(...args);
+    } catch (e) {
+      if (!PRODUCTION) {
+        throw e;
+      }
+    }
+  }
+
+  const w$1 = WINDOW || {};
+  if (!w$1[NAMESPACE_IDENTIFIER]) w$1[NAMESPACE_IDENTIFIER] = {};
+  if (!w$1[NAMESPACE_IDENTIFIER].styles) w$1[NAMESPACE_IDENTIFIER].styles = {};
+  if (!w$1[NAMESPACE_IDENTIFIER].hooks) w$1[NAMESPACE_IDENTIFIER].hooks = {};
+  if (!w$1[NAMESPACE_IDENTIFIER].shims) w$1[NAMESPACE_IDENTIFIER].shims = [];
+  var namespace = w$1[NAMESPACE_IDENTIFIER];
+
+  function normalizeIcons(icons) {
+    return Object.keys(icons).reduce((acc, iconName) => {
+      const icon = icons[iconName];
+      const expanded = !!icon.icon;
+
+      if (expanded) {
+        acc[icon.iconName] = icon.icon;
+      } else {
+        acc[iconName] = icon;
+      }
+
+      return acc;
+    }, {});
+  }
+
+  function defineIcons(prefix, icons) {
+    let params = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    const {
+      skipHooks = false
+    } = params;
+    const normalized = normalizeIcons(icons);
+
+    if (typeof namespace.hooks.addPack === 'function' && !skipHooks) {
+      namespace.hooks.addPack(prefix, normalizeIcons(icons));
+    } else {
+      namespace.styles[prefix] = { ...(namespace.styles[prefix] || {}),
+        ...normalized
+      };
+    }
+    /**
+     * Font Awesome 4 used the prefix of `fa` for all icons. With the introduction
+     * of new styles we needed to differentiate between them. Prefix `fa` is now an alias
+     * for `fas` so we'll ease the upgrade process for our users by automatically defining
+     * this as well.
+     */
+
+
+    if (prefix === 'fas') {
+      defineIcons('fa', icons);
+    }
+  }
+
+  var icons = {
+    
+{{#each icons}}
+    "{{@key}}": [
+      {{~ this.width}},
+      {{~ this.height}},[
+        {{~#each this.ligatures}}"{{this}}"{{#unless @last}},{{/unless ~}}{{/each ~}}
+      ],"{{this.unicodeHex}}",
+      {{~#if (isArray this.path) ~}}
+        [
+          {{~#each this.path}}"{{this}}"{{#unless @last}},{{/unless}}{{/each ~}}
+        ]
+      {{~else~}}
+        "{{this.path}}"
+      {{~/if~}}
+    ]{{#unless @last}},{{/unless}}
+    {{/each}}
+
+  };
+  var prefixes$1 = [null
+  
+{{~#each prefixes}}
+    ,'{{this}}'{{#unless @last ~}},{{/unless}}
+  {{/each}}
+
+  ];
+  bunker(() => {
+    for (const prefix of prefixes$1) {
+      if (!prefix) continue;
+      defineIcons(prefix, icons);
+    }
+  });
+
+}());

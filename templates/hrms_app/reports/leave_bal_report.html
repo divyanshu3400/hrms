@@ -1,0 +1,228 @@
+{% extends 'headhr/base_template.html' %}
+{% load static %}
+
+{% block xtra_css %}
+  <link rel="stylesheet" type="text/css" href="{% static 'files/bower_components/datatables.net-bs4/css/dataTables.bootstrap4.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'files/assets/pages/data-table/css/buttons.dataTables.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'files/bower_components/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'files/assets/pages/data-table/extensions/autofill/css/autoFill.dataTables.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'files/assets/pages/data-table/extensions/autofill/css/select.dataTables.min.css' %}" />
+
+  <style>
+    .table-container {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 80vh; /* Adjust this to your needs */
+      position: relative;
+    }
+    
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    th,
+    td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      background-color: skyblue;
+      z-index: 2;
+    }
+    
+    .sticky-col {
+      position: sticky;
+      left: 0;
+      background-color: #fff;
+      z-index: 1;
+    }
+    
+    .sticky-col:nth-child(2) {
+      left: 120px; /* Adjust based on the width of the first sticky column */
+      z-index: 1;
+    }
+    
+    .sticky-col:nth-child(3) {
+      left: 240px; /* Adjust based on the width of the first and second sticky columns */
+      z-index: 1;
+    }
+    
+    .sticky-header.sticky-col {
+      z-index: 3; /* Ensure the top left header cells are above others */
+    }
+  </style>
+{% endblock %}
+
+{% block main_content %}
+  <div class="pcoded-content">
+    <div class="pcoded-inner-content">
+      <div class="main-body">
+        <div class="page-wrapper">
+          <div class="page-header">
+            <div class="row align-items-end">
+              <div class="col-lg-8">
+                <div class="page-header-title">
+                  <div class="d-inline"></div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="page-header-breadcrumb">
+                  <ul class="breadcrumb-title">
+                    <li class="breadcrumb-item" style="float: left;">
+                      <a href="{% url 'hrhead_home' %}"><i class="feather icon-home"></i></a>
+                    </li>
+                    <li class="breadcrumb-item" style="float: left;">
+                      <a href="{% url 'hrhead_home' %}">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item" style="float: left;">
+                      <a href="#!">Month Attendance</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="page-body">
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>Employee From:<strong class="text-primary">  {{ from_date_str }}</strong> To: <strong class="text-primary"> {{end_date_str}}</strong> Present / Absent Report</h5>
+                    <div class="card-header-right">
+                      <ul class="list-unstyled card-option">
+                        <li>
+                          <i class="feather icon-maximize full-card"></i>
+                        </li>
+                        <li>
+                          <i class="feather icon-minus minimize-card"></i>
+                        </li>
+                        <li>
+                          <i class="feather icon-trash-2 close-card"></i>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div class="card-block">
+                    <div class="row">
+                      <div class="col-9">
+                        <form class="mb-3" method="post" action="{% url 'show_monthly_presence' %}">
+                          {% csrf_token %}
+                          <div class="row">
+                            <div class="col">
+                              <label for="fromDate">From</label>
+                              <input type="date" id="fromDate" name="fromDate" class="form-control" required />
+                            </div>
+                            <div class="col">
+                              <label for="toDate">To</label>
+                              <input type="date" id="toDate" name="toDate" class="form-control" required />
+                            </div>
+
+                            <div class="col">
+                              <button type="submit" class="btn btn-primary">Get Attendance</button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                      <div class="col-3">
+                        <a href="{% url 'show_detailed_monthly_presence' %}" class="btn btn-dark">Get Detailed Attendance</a>
+                      </div>
+                    </div>
+
+                    <div class="dt-responsive table-responsive">
+                      <div class="table-container">
+                        <table class="table table-striped table-bordered nowrap">
+                          <thead>
+                            <tr>
+                              <th class="sticky-header">Employee Code</th>
+                              <th class="sticky-header">Employee Name</th>
+                              {% for date in dates %}
+                                <th class="sticky-header">
+                                  <a href="{% url 'headhr_regularize_selected' date=date %}">{{ date.day }}</a>
+                                </th>
+                              {% endfor %}
+                            </tr>
+                          </thead>
+                          <tbody>{{ table_data|safe }}</tbody>
+                        </table>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col">
+                        <a href="{% url 'download_month_present' start_date_str=from_date_str end_date_str=end_date_str %}" class="btn btn-primary">Export Excel</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="styleSelector"></div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="profileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="profileModalLabel">Regularize for <span id="modalDate"></span></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form method="post" action="{% url 'regularize_all' %}">
+            {% csrf_token %}
+            <label class="form-label" for="date">Date:</label>
+            <input class="form-control" type="date" name="date" id="date" />
+            <label class="form-label" for="reason">Reason:</label>
+            <input class="form-control" type="text" name="reason" id="reason" />
+            <button type="submit" class="btn btn-primary">Regularize</button>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block xtra_js %}
+  <script src="{% static 'files/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+  <script src="{% static 'files/bower_components/datatables.net-buttons/js/dataTables.buttons.min.js' %}"></script>
+  <script src="{% static 'files/assets/pages/data-table/js/jszip.min.js' %}"></script>
+  <script src="{% static 'files/assets/pages/data-table/js/pdfmake.min.js' %}"></script>
+  <script src="{% static 'files/assets/pages/data-table/js/vfs_fonts.js' %}"></script>
+  <script src="{% static 'files/assets/pages/data-table/extensions/autofill/js/dataTables.autoFill.min.js' %}"></script>
+  <script src="{% static 'files/assets/pages/data-table/extensions/autofill/js/dataTables.select.min.js' %}"></script>
+  <script src="{% static 'files/bower_components/datatables.net-buttons/js/buttons.print.min.js' %}"></script>
+  <script src="{% static 'files/bower_components/datatables.net-buttons/js/buttons.html5.min.js' %}"></script>
+  <script src="{% static 'files/assets/pages/data-table/js/dataTables.bootstrap4.min.js' %}"></script>
+  <script src="{% static 'files/bower_components/datatables.net-responsive/js/dataTables.responsive.min.js' %}"></script>
+  <script src="{% static 'files/bower_components/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js' %}"></script>
+  <script src="{% static 'files/assets/pages/data-table/extensions/autofill/js/extensions-custom.js' %}"></script>
+  <script>
+    $(document).ready(function () {
+      $('.date-link').on('click', function (event) {
+        var modal = $('#profileModal')
+        modalDate
+        var modalDate = $('#modalDate')
+        var dateStr = $(this).data('date')
+        var parts = dateStr.split('-')
+        var year = parts[2]
+        var month = parts[1]
+        var day = parts[0]
+        var formattedDate = year + '-' + month + '-' + day
+        modal.find('#date').val(formattedDate)
+        modalDate.text(formattedDate)
+      })
+    })
+  </script>
+{% endblock %}

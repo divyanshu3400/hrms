@@ -1,0 +1,204 @@
+{% extends 'hrms_app/base.html' %}
+{% load static hrms_tag humanize i18n %}
+{% block title %}
+  {{ user.get_full_name }} | {{ tour_application.from_destination }}
+{% endblock %}
+{% block extrastyle %}
+  <link rel="stylesheet" href="{% static 'hrms_app/css/status.css' %}" />
+{% endblock %}
+{% block content %}
+  {% render_breadcrumb 'Tour Detail' urls %}
+
+  {% if form.non_field_errors %}
+    <div class="notifications">
+      {% for error in form.non_field_errors %}
+        <div class="notification error">{{ error }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+  <div class="bg-light my-3">
+    <div class="row">
+      <div class="col-12">
+        <div class="row">
+          <div class="col-md-6 col-lg-6 col-sm-12">
+            <div class="card-header d-flex align-items-center">
+              {% if tour_application.applied_by.personal_detail.avatar %}
+                <img src="{{ tour_application.applied_by.personal_detail.avatar.url }}" class="rounded-circle me-3" alt="Avatar" style="width: 50px; height: 50px;" />
+              {% endif %}
+              <div>
+                <h5 class="card-title mb-0">{{ tour_application.applied_by }}</h5>
+                <small class="card-subtitle text-uppercase">{{ tour_application.slug }}</small>
+              </div>
+              <a class="btn btn-sm btn-info" href="{{ pdf_url }}">{% trans 'Download PDF' %}</a>
+            </div>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <strong class="d-inline">Boarding:</strong>
+                <span class="d-inline">{{ tour_application.from_destination }}</span>
+                <span class="badge bg-warning text-sm text-dark d-inline">{{ tour_application.start_date }} - {{ tour_application.start_time }}</span>
+              </li>
+              <li class="list-group-item">
+                <i class="fas fa-arrow-right mx-2 d-inline"></i>
+                <strong class="d-inline">Destination:</strong>
+                <span class="d-inline">{{ tour_application.to_destination }}</span>
+                <span class="badge bg-warning text-sm text-dark d-inline">
+                  {% if tour_application.extended_end_date and tour_application.extended_end_time %}
+                    {{ tour_application.extended_end_date }} - {{ tour_application.extended_end_time }}
+                  {% else %}
+                    {{ tour_application.end_date }} - {{ tour_application.end_time }}
+                  {% endif %}
+                </span>
+              </li>
+
+              <li class="list-group-item">
+                <strong>Status:</strong> <span class="float-end fw-bold text-uppercase {{ tour_application.status }}">{{ tour_application.status|upper }}</span>
+              </li>
+              <li class="list-group-item">
+                <strong>Applied At:</strong> {{ tour_application.updated_at }}
+              </li>
+              {% if tour_application.created_at %}
+                <li class="list-group-item">
+                  <strong>Last Updated At:</strong> {{ tour_application.created_at }}
+                </li>
+              {% endif %}
+              <strong>Reason:</strong>
+              <li class="list-group-item">
+                {{ tour_application.remarks|safe }}</li>
+            </ul>
+          </div>
+          <div class="col-md-6 col-lg-6 col-sm-12">
+            <div class="card-header">
+              <h5>Follow-ups</h5>
+            </div>
+            <div class="card-body">
+              <ul class="list-group">
+                {% for log in tour_application.logs.all|dictsortreversed:'timestamp' %}
+                  <li class="list-group-item">
+                    <strong>{{ log.action }}</strong> by {{ log.action_by_name }} - {{ log.timestamp }} ({{ log.timestamp|naturaltime }})<p class="mb-0">{{ log.comments }}</p>
+                  </li>
+                {% empty %}
+                  <li class="list-group-item">No logs available.</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="card mt-4">
+          <div class="card-body">
+            {% if tour_application.extended_end_date or tour_application.extended_end_time %}
+              <h5>{{ tour_application.applied_by }} has asked for extension of tour</h5>
+              <li class="list-group-item">
+                <strong>From:</strong> {{ tour_application.end_date }} {{ tour_application.end_time }}
+              </li>
+              <li class="list-group-item">
+                <strong>To:</strong> {{ tour_application.extended_end_date }} {{ tour_application.extended_end_time }}
+              </li>
+            {% endif %}
+            <form id="tour-update-form" method="post">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-12 mb-3">
+                  <div class="form-group">
+                    <label for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                      <div class="alert alert-danger mt-2">
+                        {% for error in form.status.errors %}
+                          <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+                {% if not is_manager %}
+                  <div class="col-md-6 mb-3">
+                    <label for="{{ form.extended_end_date.id_for_label }}">{{ form.extended_end_date.label }}</label>
+                    {{ form.extended_end_date }}
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="{{ form.extended_end_time.id_for_label }}">{{ form.extended_end_time.label }}</label>
+                    {{ form.extended_end_time }}
+                  </div>
+                {% endif %}
+                <div class="col-12 mb-3">
+                  <label for="{{ form.reason.id_for_label }}">{{ form.reason.label }}</label>
+                  {{ form.reason }}
+                </div>
+                <div class="col-12 d-flex gap-2">
+                  <button type="button" class="btn btn-sm btn-primary" onclick="$('#updateDialog').modal('show')">
+                    <i class="fas fa-check-circle"></i>
+                    {% if is_manager %}
+                      Update
+                    {% else %}
+                      Submit Request
+                    {% endif %}
+                  </button>
+                  {% if not is_manager %}
+                    <a type="button" class="btn btn-sm btn-danger" href="{{ delete_url }}">{% trans 'Delete' %}</a>
+                    {% if tour_application.status == 'pending' %}
+                      <a class="btn btn-sm btn-warning" href="{{ edit_url }}">{% trans 'Edit' %}</a>
+                    {% endif %}
+                  {% endif %}
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- Update Modal -->
+        <div class="modal fade" id="updateDialog" tabindex="-1" aria-labelledby="updateDialogLabel" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="updateDialogLabel">Are you sure?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                {% if is_manager %}
+                  You want to update the tour from {{ tour_application.from_destination }} to {{ tour_application.to_destination }} of {{ tour_application.applied_by }}.
+                {% else %}
+                  You want to cancel your tour from {{ tour_application.from_destination }} to {{ tour_application.to_destination }}.
+                {% endif %}
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitForm()">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    function submitForm() {
+      document.getElementById('tour-update-form').submit()
+    }
+  </script>
+  <script>
+    $(document).ready(function () {
+      // Initially hide the extended date and time fields
+      $('#id_extended_end_date').closest('.col-md-6').hide()
+      $('#id_extended_end_time').closest('.col-md-6').hide()
+    
+      // Listen for changes on the status dropdown
+      $('#id_status').change(function () {
+        var selectedStatus = $(this).val()
+    
+        // Show or hide the extended fields based on the selected status
+        if (selectedStatus === 'extended') {
+          $('#id_extended_end_date').closest('.col-md-6').show()
+          $('#id_extended_end_time').closest('.col-md-6').show()
+        } else {
+          // Hide fields and clear their values
+          $('#id_extended_end_date').closest('.col-md-6').hide()
+          $('#id_extended_end_time').closest('.col-md-6').hide()
+          $('#id_extended_end_date').val('')
+          $('#id_extended_end_time').val('')
+        }
+      })
+    })
+  </script>
+{% endblock %}

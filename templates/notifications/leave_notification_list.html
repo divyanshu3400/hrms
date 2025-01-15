@@ -1,0 +1,61 @@
+{% load i18n %}
+<li class="nav-item dropdown">
+  
+  <a class="nav-link count-indicator" id="countDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+    <i class="icon-bell"></i>
+    <span class="badge bg-danger">{{ count }}</span>
+  </a>
+  <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list pb-0" aria-labelledby="countDropdown">
+    <a class="dropdown-item py-3">
+      <p class="mb-0 font-weight-medium float-left">{% trans "You have pending approvals" %}</p>
+      <span class="badge badge-pill badge-primary float-right">View all</span>
+    </a>
+    {% if pending_leaves %}
+      <div class="dropdown-divider"></div>
+      {% for leave in pending_leaves %}
+        <a class="dropdown-item preview-item" href="{% url 'leave_application_detail' slug=leave.leaveApplication.slug %}">
+          <div class="preview-thumbnail">
+            <img src="{{ leave.leaveApplication.appliedBy.personal_detail.avatar.url }}" alt="Avatar" class="img-sm profile-pic" />
+          </div>
+          <div class="preview-item-content flex-grow py-2">
+            <p class="preview-subject ellipsis font-weight-medium text-dark">{{ leave.leaveApplication.appliedBy.get_full_name }}</p>
+            <p class="fw-light small-text mb-0">Applied for {{ leave.leaveApplication.applicationNo }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    {% endif %}
+    
+    {% if pending_tours %}
+      
+      <div class="dropdown-divider"></div>
+      {% for tour in pending_tours %}
+        <a class="dropdown-item preview-item" href="{% url 'tour_application_detail' slug=tour.slug %}">
+          <div class="preview-thumbnail">
+            <img src="{{ tour.applied_by.personal_detail.avatar.url }}" alt="Avatar" class="img-sm profile-pic" />
+          </div>
+          <div class="preview-item-content flex-grow py-2">
+            <p class="preview-subject ellipsis font-weight-medium text-dark">{{ tour.applied_by.get_full_name }}</p>
+            <p class="fw-light small-text mb-0">Applied for tour from <br>{{ tour.from_destination }} → {{ tour.to_destination }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    {% endif %}
+    
+    {% if pending_reg %}
+      
+      <div class="dropdown-divider"></div>
+      {% for reg in pending_reg %}
+        <a class="dropdown-item preview-item" href="{% url 'event_detail' slug=reg.slug %}">
+          <div class="preview-thumbnail">
+            <img src="{{ reg.applied_by.personal_detail.avatar.url }}" alt="Avatar" class="img-sm profile-pic" />
+          </div>
+          <div class="preview-item-content flex-grow py-2">
+            <p class="preview-subject ellipsis font-weight-medium text-dark">{{ reg.applied_by.get_full_name }}</p>
+            <p class="fw-light small-text mb-0">Applied for regularization of {{ reg.reg_status }}</p>
+          </div>
+        </a>
+      {% endfor %}
+    {% endif %}
+
+  </div>
+</li>

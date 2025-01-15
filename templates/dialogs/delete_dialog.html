@@ -1,0 +1,17 @@
+<div class="dialog" data-role="dialog" id="deleteDialog">
+    <div class="dialog-title bg-alert">{{ title }}</div>
+    <div class="dialog-content">{{ content }}</div>
+    <div class="dialog-actions">
+        <div class="row">
+            <div class="cell">
+                <button type="reset" class="button secondary js-dialog-close">Cancel</button>
+            </div>
+            <div class="cell">
+                <form method="POST" action="{{ action_url }}">
+                    {% csrf_token %}
+                    <button class="button alert js-dialog-close" type="submit">Go</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

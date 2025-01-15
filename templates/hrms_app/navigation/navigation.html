@@ -1,0 +1,18 @@
+<li class="{% if is_parent_active %}active-container{% endif %}">
+    <a href="#" class="dropdown-toggle {% if is_parent_active %}active-toggle active-control{% endif %}">
+      <span class="icon"><span class="mif-versions"></span></span>
+      <span class="caption">Employee</span>
+    </a>
+    <ul class="navview-menu stay-open" data-role="dropdown" data-role-dropdown="true"  style="{% if is_parent_active %}display: block; {% else %}display: none;{% endif %}" >
+      <li class="item-header">Pages</li>
+      {% for item in navigation_items %}
+      <li>
+        <a href="{% url item.url_name %}" class="{% if item.is_active %}active{% endif %}">
+          <span class="icon"><span class="{{ item.icon }}"></span></span>
+          <span class="caption">{{ item.name }}</span>
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+  </li>
+  

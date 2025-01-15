@@ -1,0 +1,200 @@
+{% extends 'hrms_app/base.html' %}
+{% load static hrms_tag i18n %}
+{% load render_table from django_tables2 %}
+{% block title %}
+  {{ request.user|upper }} | Leave tracker
+{% endblock %}
+
+{% block extrastyle %}
+
+{% endblock %}
+
+{% block content %}
+  {% render_breadcrumb 'Leave Tracker' urls %}
+
+  <!-- Grouping rows -->
+<div class="bg-light p-2">
+  <div class="row">
+    {% get_leave_balances request.user %}
+  </div>
+</div>
+
+<div class="bg-light p-2">
+  <form method="get" action="{% url 'leave_tracker' %}">
+    <div class="row">
+      <div class="col-md-4">{{ form.status.label_tag }} {{ form.status }}</div>
+      <div class="col-md-3">{{ form.from_date.label_tag }} {{ form.from_date }}</div>
+      <div class="col-md-3">{{ form.to_date.label_tag }} {{ form.to_date }}</div>
+      <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary btn-sm"><span class="bi bi-funnel"></span> Filter</button>
+        <button type="button" class="btn btn-secondary btn-sm ms-2" onclick="window.location.href="{% url 'leave_tracker' %}"">Clear Filter</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<div class="bg-light p-2">
+  <div class="row">
+    {% if table.data %}
+      <!-- Applied Leaves Table -->
+      <div class="col-md-10">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0"><span class="bi bi-table"></span> Applied Leaves</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              {% render_table table %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column Visibility Controls -->
+      <div class="col-md-2">
+        <div id="column-visibility-controls" class="bg-white border rounded p-3" style="max-height: 300px; overflow-y: auto;">
+          <h5>Select Columns</h5>
+          {% for column in all_columns %}
+            <label class="d-block">
+              <input
+                type="checkbox"
+                class="column-toggle"
+                data-column="{{ column }}"
+                {% if column in selected_columns %}checked{% endif %}
+              >
+              {{ column|capfirst }}
+            </label>
+          {% endfor %}
+        </div>        
+      </div>
+    {% else %}
+      <!-- If no leaves are available, show a message -->
+      <div class="col-12 text-center p-4">
+        <p class="text-muted">No leave applications found.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% if user.is_rm %}
+  <div class="container bg-light p-3 m-2">
+    {% if employee_leaves %}
+      <div class="row">
+        <div class="col-12">
+          <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+              <h5>Requested Leaves</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                {% for leave in employee_leaves %}
+                <div class="col-md-3 mb-4">
+                  <div class="card shadow-sm">
+                      <div class="card-header bg-info text-white d-flex align-items-center">
+                          {% if leave.leaveApplication.appliedBy.personal_detail.avatar %}
+                              <img style="height: 60px; width: 60px;" src="{{ leave.leaveApplication.appliedBy.personal_detail.avatar.url }}" class="avatar rounded-circle mr-3" alt="Avatar" />
+                          {% endif %}
+                          <div>
+                              <h6 class="mb-0">{{ leave.leaveApplication.appliedBy }}</h6>
+                              <a href="{% url 'leave_application_detail' leave.leaveApplication.slug %}" class="text-white">
+                                  <p class="mb-0">Application No: {{ leave.leaveApplication.applicationNo }}</p>
+                              </a>
+                          </div>
+                      </div>
+                      <div class="card-body p-1">
+                          <ul class="list-group">
+                              <li class="list-group-item">
+                                  <strong>{{ leave.leaveApplication.leave_type.leave_type_short_code }} Leave Balance:</strong>
+                                  <span class="float-end fw-bold">{{ leave.leaveApplication.balanceLeave }}</span>
+                              </li>
+                              <li class="list-group-item">
+                                  <strong>{% trans "Day(s)" %}:</strong>
+                                  <span class="float-end fw-bold">{{ leave.leaveApplication.usedLeave }}</span>
+                              </li>
+                              <li class="list-group-item">
+                                  <strong>Status:</strong>
+                                  <span class="float-end fw-bold text-uppercase {{ leave.leaveApplication.status }}">{{ leave.leaveApplication.status|upper }}</span>
+                              </li>
+                              <li class="list-group-item">
+                                  <strong>From:</strong>
+                                  <span class="float-end">{{ leave.start_date }} - {% leave_start_end_status leave.leaveApplication.startDayChoice %}</span>
+                              </li>
+                              <li class="list-group-item">
+                                  <strong>To:</strong>
+                                  <span class="float-end">{{ leave.end_date }} - {% leave_start_end_status leave.leaveApplication.endDayChoice %}</span>
+                              </li>
+                          </ul>
+                      </div>
+                      <div class="card-footer">
+                        <a href="{% url 'leave_application_detail' leave.leaveApplication.slug %}" class="btn btn-primary btn-sm btn-block mt-3">
+                          <i class="fas fa-eye"></i> View Details
+                        </a>
+                      </div>
+                  </div>
+              </div>
+              
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="container">
+        <div class="alert alert-warning">No requested {{ selected_status}} leaves found.</div>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    function clearForm() {
+      const url = window.location.href.split('?')[0]
+      window.location.href = url 
+    }
+  </script>
+<script>
+    $(document).ready(function () {
+      $('.table').DataTable({
+        paging: true,
+        searching: true,
+        ordering: false,
+        dom: 'Bfrtip',
+        buttons: ['copy', 'csv', 'excel']
+      });
+        $(".column-toggle").on("change", function () {
+            const selectedColumns = $(".column-toggle:checked")
+                .map(function () {
+                    return $(this).data("column");
+                })
+                .get();
+
+            // Save preferences via AJAX
+            $.ajax({
+                url: "{% url 'save_column_preferences' %}",
+                method: "POST",
+                data: JSON.stringify({ selected_columns: selectedColumns }),
+                contentType: "application/json",
+                headers: { "X-CSRFToken": getCSRFToken() },
+                success: function (response) {
+                    location.reload();
+                },
+                error: function () {
+                    alert("Failed to save column preferences.");
+                },
+            });
+        });
+
+        function getCSRFToken() {
+            const cookieValue = document.cookie
+                .split("; ")
+                .find((row) => row.startsWith("csrftoken="))
+                ?.split("=")[1];
+            return cookieValue || "";
+        }
+    });
+</script>
+
+{% endblock %}

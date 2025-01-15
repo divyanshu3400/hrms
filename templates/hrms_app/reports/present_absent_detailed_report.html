@@ -1,0 +1,96 @@
+{% extends 'hrms_app/base.html' %}
+{% load static hrms_tag humanize i18n %}
+
+{% block title %}
+  {% trans 'Employee' %} | {{ title }}
+{% endblock %}
+
+{% block extrastyle %}
+  <style>
+    .table-container {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: 80vh; /* Adjust this to your needs */
+      position: relative;
+    }
+    
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    th,
+    td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid #ddd;
+    }
+    
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      background-color: skyblue;
+      z-index: 2;
+    }
+    
+    .sticky-col {
+      position: sticky;
+      left: 0;
+      background-color: #e8fff4;
+      z-index: 1;
+    }
+    
+    .sticky-col:nth-child(2) {
+      left: 90px; /* Adjust based on the width of the first sticky column */
+      z-index: 1;
+    }
+    
+    .sticky-col:nth-child(3) {
+      left: 240px; /* Adjust based on the width of the first and second sticky columns */
+      z-index: 1;
+    }
+    
+    .sticky-header.sticky-col {
+      z-index: 3; /* Ensure the top left header cells are above others */
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+  <div class="bg-light my-2">
+    <form method="get">
+      <div class="row m-2">
+        <div class="col-md-3 col-12 mb-2">{{ form.location.label_tag }} {{ form.location }}</div>
+        <!-- From Date Filter -->
+        <div class="col-md-3 col-12 mb-2">{{ form.from_date.label_tag }} {{ form.from_date }}</div>
+        <!-- To Date Filter -->
+        <div class="col-md-3 col-12 mb-2">{{ form.to_date.label_tag }} {{ form.to_date }}</div>
+        <!-- Active Filter -->
+        <div class="col-md-3 col-12 mb-2">{{ form.active.label_tag }} {{ form.active }}</div>
+        <!-- Buttons: Filter, Clear Filter, Export -->
+        <div class="col-md-3 col-12 mb-2">
+          <button type="submit" class="btn btn-sm btn-primary"><span class="mif-filter"></span> Filter</button>
+          <a class="btn btn-sm btn-secondary" href="{% url 'calendar' %}">Clear Filter</a>
+          <button type="submit" name="export" value="true" class="btn btn-sm btn-success"><span class="mif-file-excel"></span> Export to Excel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="bg-white my-2 p-2">
+    <div class="dt-responsive table-responsive">{{ html_table|safe }}</div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+  <script>
+    $(document).ready(function () {
+      $('.table').DataTable({
+        paging: true,
+        searching: true,
+        ordering: false,
+        dom: 'Bfrtip',
+        buttons: ['copy', 'csv', 'excel']
+      })
+    })
+  </script>
+{% endblock %}
