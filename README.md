@@ -1,5 +1,18 @@
+
+# Screenshot 1
 ![Screenshot of App](screenshots/img1.png "Screenshot")
 
+# Screenshot 2
+![Screenshot of App](screenshots/img2.png "Screenshot")
+
+# Screenshot 3
+![Screenshot of App](screenshots/img3.png "Screenshot")
+
+# Screenshot 4
+![Screenshot of App](screenshots/img4.png "Screenshot")
+
+# Screenshot 5
+![Screenshot of App](screenshots/img5.png "Screenshot")
 
 # Deployment Guide for Django Project with Celery, Daphne, and Nginx
 
