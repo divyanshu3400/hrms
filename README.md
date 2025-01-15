@@ -1,17 +1,17 @@
 
-# Screenshot 1
+# Attendance Log
 ![Screenshot of App](screenshots/img1.png "Screenshot")
 
-# Screenshot 2
+# Dashboard
 ![Screenshot of App](screenshots/img2.png "Screenshot")
 
-# Screenshot 3
+# Leave Tracker
 ![Screenshot of App](screenshots/img3.png "Screenshot")
 
-# Screenshot 4
+# Tour Tracker
 ![Screenshot of App](screenshots/img4.png "Screenshot")
 
-# Screenshot 5
+# Attendance Report
 ![Screenshot of App](screenshots/img5.png "Screenshot")
 
 # Deployment Guide for Django Project with Celery, Daphne, and Nginx
